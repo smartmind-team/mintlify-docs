@@ -28,7 +28,7 @@
   "tabs": [
     {
       "name": "Use Cases",
-      "url": "use-case"
+      "url": "use-cases"
     },
     {
       "name": "SDK",
@@ -79,7 +79,13 @@
     {
       "group": "Use Cases",
       "pages": [
-        "use-cases"
+        "use-cases/introduction"
+      ]
+    },
+    {
+      "group": "SDK",
+      "pages": [
+        "sdk/python"
       ]
     },
     {

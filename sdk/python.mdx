@@ -1,0 +1,49 @@
+---
+title: 'Python SDK'
+icon: 'python'
+---
+
+Welcome to our Python SDK!
+
+Unlock the power of our APIs with this easy-to-use toolkit.
+Get started today and build amazing applications.
+
+<Card
+  title="ThanoSQL - Python Library"
+  icon="python"
+  href="https://thanosql-sdk-python.readthedocs.io/en/latest/"
+>
+  Link to Library Documents
+</Card>
+
+## Usage
+
+1. First, set up your API_TOKEN and ENGINE_URL (recommended). You can find them by accessing your workspace’s settings page. Head over to the Developer tab, and then copy your API Token and Engine URL.
+
+  ```shell
+  export THANOSQL_API_TOKEN='your-api-token-here'
+  export THANOSQL_ENGINE_URL='your-engine-url-here'
+  ```
+
+2. Import the ThanoSQL client and use it to query your ThanoSQL Workspace.
+
+  ```python
+  from thanosql import ThanoSQL
+
+  client = ThanoSQL()
+  # defaults to getting the token using os.environ.get("THANOSQL_API_TOKEN"),
+  # and also defaults to getting the url using os.environ.get("THANOSQL_ENGINE_URL"),
+  # client = ThanoSQL(
+  #     api_token='your-api-token-here',
+  #     engine_url='your-engine-url-here'
+  # )
+
+  res = client.query.execute(query="SELECT 1")
+  print(res.model_dump_json(indent=4))
+
+  tables = client.table.list(schema="public")
+
+  # do something with the list of tables
+  for table in tables:
+    print(table.name)
+  ```
