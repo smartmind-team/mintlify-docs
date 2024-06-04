@@ -17,6 +17,14 @@ mintlify dev
 > [!NOTE]  
 > Use dev@smartmind.team as git user.email
 
+## Generating API References
+
+```
+npx @mintlify/scraping@latest openapi-file <path-to-openapi-file> -o api-reference
+```
+
+then, edit mint.json with navigation object suggestion.
+
 ### Troubleshooting
 
 - npm ERR! code EBADENGINE : Update node and npm version.

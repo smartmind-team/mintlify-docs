@@ -1,0 +1,20 @@
+---
+title: 'Overview'
+icon: 'circle-info'
+---
+
+This document provides a comprehensive reference for our API, allowing developers to seamlessly integrate their applications with our platform. Before proceeding,
+it's crucial to replace the `your-engine-url` with the actual `Engine URL` of the Workspace you'll be working with.
+
+<Note>
+  You can find `Engine URL` and `API Token` by accessing your Workspace’s Settings page.
+  Head over to the **Developer** tab, and then copy your API Token and Engine URL.
+</Note>
+
+## Example
+
+```
+curl --request GET \
+  --url https://your-engine-url/api/v1/query/log \
+  --header 'Authorization: <api-key>'
+```

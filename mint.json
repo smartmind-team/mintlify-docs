@@ -91,15 +91,69 @@
     {
       "group": "API Documentation",
       "pages": [
-        "api-reference/introduction"
+        "api-reference/overview"
       ]
     },
     {
-      "group": "Endpoint Examples",
+      "group": "query",
       "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        "api-reference/query/post-query",
+        "api-reference/query/get-query-logs",
+        "api-reference/query/get-templates",
+        "api-reference/query/create-template",
+        "api-reference/query/get-template",
+        "api-reference/query/update-template",
+        "api-reference/query/delete-template"
+      ]
+    },
+    {
+      "group": "table",
+      "pages": [
+        "api-reference/table/get-tables",
+        "api-reference/table/get-table",
+        "api-reference/table/update-table",
+        "api-reference/table/create-table",
+        "api-reference/table/delete-table",
+        "api-reference/table/get-records",
+        "api-reference/table/insert-records",
+        "api-reference/table/get-records-as-a-csv-file",
+        "api-reference/table/upload-table-from-csv",
+        "api-reference/table/upload-table-from-excel",
+        "api-reference/table/upload-table-from-json"
+      ]
+    },
+    {
+      "group": "table_template",
+      "pages": [
+        "api-reference/table_template/get-all-table-templates",
+        "api-reference/table_template/get-table-template",
+        "api-reference/table_template/create-table-template",
+        "api-reference/table_template/delete-table-template"
+      ]
+    },
+    {
+      "group": "view",
+      "pages": [
+        "api-reference/view/get-views",
+        "api-reference/view/get-view",
+        "api-reference/view/delete-view"
+      ]
+    },
+    {
+      "group": "schema",
+      "pages": [
+        "api-reference/schema/get-schemas",
+        "api-reference/schema/create-schema"
+      ]
+    },
+    {
+      "group": "file",
+      "pages": [
+        "api-reference/file/get",
+        "api-reference/file/delete",
+        "api-reference/file/create",
+        "api-reference/file/move",
+        "api-reference/file/get-size"
       ]
     }
   ],
@@ -107,9 +161,9 @@
     "website": "https://thanosql.com",
     "github": "https://github.com/smartmind-team"
   },
-  "openapi": "https://engine.thanosql.ai/openai.json",
+  "openapi": "api-reference/openapi.json",
   "api": {
-    "baseUrl": "https://engine.thanosql.ai/openai.json",
+    "baseUrl": "https://your-engine-url",
     "auth":{
       "method": "bearer"
     }
