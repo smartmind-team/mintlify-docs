@@ -63,7 +63,7 @@ TextID | text_embedding
 <Note>Please note that you would need to create an access token from Hugging Face to use certain models.</Note>
 
 ### Using Hugging Face Embedding Models (Image)
-Here is an example of how to use the embed function to generate embeddings for an image using Hugging Face model:
+Here is an example of how to use the `embed` function to generate embeddings for an image using Hugging Face model:
 ```sql
 SELECT photo_id, embedding
 FROM unsplash_embed_sample
@@ -112,7 +112,7 @@ TextID | text_embedding
 <Note>Please note that you would need to create an API key from OpenAI.</Note>
 
 ### Standalone Usage
-Here is an example of how to use the embed function as a standalone query:
+Here is an example of how to use the `embed` function as a standalone query:
 ```sql
 SELECT 
     thanosql.embed(
@@ -134,9 +134,3 @@ text_embedding
 <Warning>
 When using the `embed` function with the `huggingface` engine, ensure that only models compatible with the HuggingFace AutoModel and AutoTokenizer are used. Verify that the selected model is supported by the HuggingFace library to avoid compatibility issues. For more information, refer to the official [Hugging Face documentation](https://huggingface.co/docs/transformers/en/model_doc/auto).
 </Warning>
-
-## Related Functions
-
-- [Generate Function](functions/generate)
-- [Predict Function](functions/predict)
-
