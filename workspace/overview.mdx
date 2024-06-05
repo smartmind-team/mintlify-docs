@@ -5,41 +5,40 @@ icon: 'hands-clapping'
 
 The Workspace is a PaaS (Platform as a Service) product that enables data processing, AI/ML modeling, and application development with ThanoSQL. You can leverage the power of SQL and the versatility of Jupyter notebooks to query and analyze your data efficiently.
 
-The workspace is composed of two pages, the **Main Page** and the **Service Page**.
+The workspace is composed of two pages,
 
-- **Main Page** : Create, view, and manage workspaces.
-- **Service Page** : Access various services such as Query Manager and Lab.
+- [Main Page](#main-page) : Create, view, and manage workspaces.
+- [Service Page](#service-page) : Access various services such as Query Manager and Lab.
 
 ## Main Page
 
-You can view and manage workspaces collectively. If you don't have an workspace yet, you can create a new one by clicking the **Start button**. Please refer to the [Create Workspace](#create-a-workspace) guide for instructions.
+You can view and manage workspaces collectively. If you don't have an workspace yet, you can create a new one by clicking the **Start** button. Please refer to the [Create Workspace](#create-workspace) guide for instructions.
 
 <img
   style={{ borderRadius: '0.5rem' }}
   src="images/workspace/main01.png"
 />
 
-1. Create New Workspace
-
-    You can go to the workspace creation page to create an additional workspace.
-2. Workspace
+1. [Create Workspace](#create-workspace)
+2. Workspace Card
     1. You can check the name of the corresponding workspace.
     2. You can check the operating status of the corresponding workspace.
     3. You can configure the corresponding workspace.
-    4. You can check the Plan (name, class), End Date, and Role of the corresponding workspace.
+    4. You can check the Plan, End Date, and Role of the corresponding workspace.
     5. You can access the Service page of the corresponding workspace.
 
-### Create a Workspace
+### Create Workspace
 
-- Click the Create New Workspace button on the main page.
-- If there is **no** existing workspace, click the **Start button** on the initial main page to navigate to the workspace creation page.
+- Click the **Create New Workspace** button on the main page.
+- If there is **no** existing workspace, click the **Start** button on the initial main page to navigate to the workspace creation page.
 
 <Steps>
   <Step title="Select Plan">
     Select Plan you want and click the 'Start' button to proceed to the next step.
   </Step>
   <Step title="Enter the Workspace Name">
-    Enter the desired Workspace Name. It can only be written in English (lowercase, first letter) and numbers (last letter). ex: myworkspace123
+    <p>Enter the desired Workspace Name.</p>
+    <Warning>It can only be written in English (lowercase, first letter) and numbers (last letter). ex: myworkspace123</Warning>
   </Step>
   <Step title="Complete Request">
     Confirm the selected Plan Tier, Plan Name, and Price. Then, complete your request.
@@ -48,41 +47,16 @@ You can view and manage workspaces collectively. If you don't have an workspace 
 
 ## Service Page
 
-On the workspace list of the main page, you can navigate to the service page of the desired workspace by clicking the **Open button** for that workspace.
+On the workspace list of the main page, you can navigate to the service page of the desired workspace by clicking the **Open** button for that workspace.
 
 Here are the available features on the Service page:
 
-- **Query Manager**: A tool that allows you to execute and track ThanoSQL queries. It provides interfaces such as Query Editor, Query Log, and Data Viewer. To try Query Manager in Workspace, see the [Query Manager Manual](query_manager).
+- [Query Manager](./qm): A tool that allows you to execute and track ThanoSQL queries. It provides interfaces such as Query Editor, Query Log, and Data Viewer.
 
-- **Lab**: Provides a versatile environment for data exploration, AI/ML modeling, and application development based on Jupyter Notebook. To try Lab in Workspace, see the [Lab Manual](lab).
+- [Lab](./lab): Provides a versatile environment for data exploration, AI/ML modeling, and application development based on Jupyter Notebook.
 
-- **File Manager** : This feature allows you to upload and manage files for use in the workspace. To try it out, please refer to the [File Manager Manual](file_manager.md)
+- [File Manager](./fm) : This feature allows you to upload and manage files for use in the workspace.
 
+- [Settings](./settings) : You can access general workspace information, usage logs, and data required for development, such as API tokens.
 
-
-<Tip>
-
-Mintlify supports [HTML tags in Markdown](https://www.markdownguide.org/basic-syntax/#html). This is helpful if you prefer HTML tags to Markdown syntax, and lets you create documentation with infinite flexibility.
-
-</Tip>
-
-### iFrames
-
-Loads another HTML page within the document. Most commonly used for embedding videos.
-
-```html
-<iframe src="https://thanosql.com"> </iframe>
-```
-ce. To try it out, please refer to the [File Manager Manual](file_manager.md)
-
-
-[IMAGE](../../../img/getting_started/paas/workspace/img0.png)
-
-A side navigation(①), a common component of service pages, provides navigation to each feature and provides a shortcut to the [workspace settings page](#workspace-settings-page). Additionally, the drop-down menu(②) in the top right corner allows you to navigate to the service page of other workspaces.
-
-## __Create a Workspace__
-
-- Click the Create New Workspace button on the main page.
-- If there is **no** existing workspace, click the **Start button** on the initial main page to navigate to the workspace creation page.
-
-[IMAGE](../../../img/getting_started/img3.png)
+Each service can be accessed by navigating through the left side navigation menu. Also, you can switch between workspaces using the workspace selection menu in the side navigation.

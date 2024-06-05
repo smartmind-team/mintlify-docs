@@ -80,9 +80,9 @@
       "group": "Workspace",
       "pages": [
         "workspace/overview",
-        "workspace/query-manager",
+        "workspace/qm",
         "workspace/lab",
-        "workspace/file-manager",
+        "workspace/fm",
         "workspace/settings"
       ]
     },
