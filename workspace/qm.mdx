@@ -1,3 +1,173 @@
 ---
 title: 'Query Manager'
 ---
+
+The Query Manager enables you to execute ThanoSQL queries and analyze results through a user interface that is similar to a Database Management System (DBMS).
+
+It offers an intuitive way to understand the schema and table structure of the workspace database. You can effortlessly manage and view previous query results with query logs.
+
+Additionally, the Query Manager provides a data viewer for analyzing unstructured data, such as images and videos, within query execution results.
+
+
+**Key Features**
+
+- Execution of both ThanoSQL and regular SQL commands
+- 'Table Schema' / 'Preview' of data tables
+- Query logs
+- Data viewer
+
+## Overview
+
+The Query Manager page consists of three main sections.
+
+<img
+  style={{ borderRadius: '0.5rem' }}
+  src="/images/workspace/qm-overview.png"
+/>
+
+1. Query Editor
+
+2. Database Explorer
+
+3. Query Logs
+
+## Query Editor
+
+Execute ThanoSQL queries and view the results in a table format.
+
+- Tabs: Write queries and view results in different tabs. You can add or delete tabs as needed.
+
+- Query Input Area: Input queries and execute/stop them. Supports [keyboard shortcuts](#keyboard-shortcuts).
+
+- CSV Download: Download result as a CSV file.
+
+- [Data Viewer](#data-viewer) : Used for analyzing unstructured data like images and videos.
+
+- Result Table: Displays query results as a table.
+
+### Data Viewer
+
+The Data Viewer feature allows you to view unstructured data within the result table. You can select a column that contains the path to the unstructured file and choose the file format (image, video, audio) to display the unstructured data. The pagination feature at the bottom allows you to adjust the number of items displayed per page and navigate to different pages.
+
+<Tip>
+    The Data Viewer displays unstructured data based on the file path. Therefore, the stored path value must actually exist in the workspace. (Sometimes it may not appear due to issues such as proxies.)
+</Tip>
+
+### Keyboard Shortcuts
+
+Here are the shortcuts supported in the query editor:
+
+| Action                                        | Key Combination (Windows/Linux) | Key Combination (Mac OS) |
+| --------------------------------------------- | ------------------------------- | ------------------------ |
+| Execute the current or highlighted query      | Ctrl+Enter                      | Cmd + Enter              |
+| Auto-complete the current word                | Tab or Ctrl + Space             | Tab or Cmd + Space       |
+| Add a comment to the current or selected line | Ctrl+/                          | Cmd + /                  |
+| Access the editor menu                        | Shift + F10                     | Shift + F10              |
+| Access the list of editor shortcuts           | F1                              | F1                       |
+
+<Info>
+    The query editor uses Monaco Editor, which is also used in VSCode. Most shortcuts are the same as those used in VSCode. Please refer to the [link](https://en.docs.monaca.io/products_guide/monaca_ide/editor) for a list of Monaco Editor's shortcuts.
+</Info>
+
+### Database Explorer
+
+You can access the [schema](https://www.postgresql.org/docs/current/ddl-schemas.html) and table configuration information of your workspace database.
+
+Each workspace provides the public schema and temporary result tables by default. Queries that do not specify a schema will refer to tables in the public schema. Any query executed in the query editor that produces results in tabular form will be stored as a `Temporary Result Table` with a random table name. This allows you to reuse previous query results as needed.
+
+### Table / View Information
+
+The Database Explorer provides information about tables/views within the schema. Click on the table/view name to see the following information.
+
+#### Table Schema
+
+You can check the column name, data type, and nullability of the table/view.
+
+#### Preview
+
+You can quickly see the contents of the selected table/view.
+
+<Warning>
+    You cannot edit data tables in the preview.
+</Warning>
+
+#### Definition
+
+You can see the definition (query statement) of the selected view.
+
+### Add Data
+
+This is a feature that allows you to add new tables and schemas to the database. You can open the Add Table Data menu by clicking the **`+`** button located in the top right corner of the database explorer.
+
+#### Create Table
+
+Create a table to the database. Choose one of the following data source upload methods to proceed. (You can also add a table using the right **+** button in each schema)
+
+<AccordionGroup>
+  <Accordion title="Create New Table Manually">
+    <Steps>
+        <Step title="Select the schema in which to create the table">
+            If the desired schema doesn't exist, you can create a new one.
+        </Step>
+        <Step title="Enter the name of the table you want to create">
+            It can include letters, numbers, and underscores, but it cannot start with a number. You cannot create tables with duplicate names within the same schema.
+        </Step>
+        <Step title="Enter the name of each column that makes up the table">
+            This is a required field, and you cannot create columns with duplicate names within the same table. Depending on the data type, the available options for adjustment may vary, allowing you to configure the column according to its intended purpose.
+        </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="Local File Upload">
+    <Steps>
+        <Step title="Upload a file that matches the format">
+            <p>You can choose the file format (CSV, Excel, etc.). The allowed file extensions are as follows:</p>
+            <ul>
+                <li>CSV: .csv</li>
+                <li>Excel: .xls, .xlsx, .xlsm, .xlsb, .odf, .ods, .odt</li>
+            </ul>
+        </Step>
+        <Step title="Select the schema in which to create the table">
+            If the desired schema doesn't exist, you can create a new one.
+        </Step>
+        <Step title="Enter the name of each column that makes up the table">
+            This is a required field, and you cannot create columns with duplicate names within the same table. Depending on the data type, the available options for adjustment may vary, allowing you to configure the column according to its intended purpose.
+        </Step>
+        <Step title="Select the column configuration method">
+            <p>You can choose to automatically detect columns from the uploaded file or input them manually.</p>
+            <ul>
+                <li>Auto Detection: Automatically detects the columns in the uploaded file</li>
+                <li>Manual Input: Input columns directly, similar to creating a new table from scratch</li>
+            </ul>
+        </Step>
+        <Step title="Select the data writing option">
+            <p>You can configure the data writing options as follows:</p>
+            <ul>
+                <li>Write if Empty: Writes data only when the table does not exist already</li>
+                <li>Append to Table: Adds data on top of existing contents if the table already exists</li>
+                <li>Overwrite Table: Overwrites the contents of the table if it already exists</li>
+            </ul>
+        </Step>
+    </Steps>
+  </Accordion>
+</AccordionGroup>
+
+### **Managing Templates**
+
+You can manage table templates and query templates. Move by clicking the menu button located in the upper right corner of the Database Explorer.
+
+### **Query Logs**
+
+All queries executed in Query Manager are logged and can be viewed in the Query Logs section. They are listed in descending order of creation time. The logs show the executed query statement and whether the execution was successful.
+
+<Info>
+    You can enter a keyword to search for query logs that were executed with similar query syntax.
+</Info>
+
+- Query Information: Displays the ID, success status, creation time, start execution time, end time, and destination table name of the query.
+
+- Query Statement: Displays the executed query statement.
+
+- Error Message: Displays error messages that occurred during query execution.
+
+- Open as New Query: Opens the query editor tab with the content of the clicked query.

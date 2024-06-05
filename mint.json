@@ -27,20 +27,12 @@
   },
   "tabs": [
     {
-      "name": "Use Cases",
-      "url": "use-cases"
-    },
-    {
       "name": "SDK",
       "url": "sdk"
     },
     {
       "name": "API Reference",
       "url": "api-reference"
-    },
-    {
-      "name": "FAQs",
-      "url": "faq"
     }
   ],
   "anchors": [
@@ -64,8 +56,7 @@
     {
       "group": "Get Started",
       "pages": [
-        "introduction",
-        "quickstart"
+        "introduction"
       ]
     },
     {
@@ -85,12 +76,6 @@
         "workspace/lab",
         "workspace/fm",
         "workspace/settings"
-      ]
-    },
-    {
-      "group": "Use Cases",
-      "pages": [
-        "use-cases/introduction"
       ]
     },
     {
