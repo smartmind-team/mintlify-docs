@@ -74,7 +74,7 @@
         "functions/generate",
         "functions/embed",
         "functions/predict",
-        "functions/cleanup_resources"
+        "functions/cleanup-resources"
       ]
     },
     {
