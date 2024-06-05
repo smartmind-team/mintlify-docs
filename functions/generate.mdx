@@ -1,37 +1,214 @@
----
-title: 'Code Blocks'
-description: 'Display inline code and code blocks'
-icon: 'code'
----
+# Generate Function
 
-## Basic
+The `generate` function in ThanoSQL is designed to generate text based on a given input using a pre-trained text generation model. This function leverages the capabilities of the HuggingFace Transformers library to provide efficient and high-quality text generation.
 
-### Inline Code
+## Syntax 
 
-To denote a `word` or `phrase` as code, enclose it in backticks (`).
-
-```
-To denote a `word` or `phrase` as code, enclose it in backticks (`).
-```
-
-### Code Block
-
-Use [fenced code blocks](https://www.markdownguide.org/extended-syntax/#fenced-code-blocks) by enclosing code in three backticks and follow the leading ticks with the programming language of your snippet to get syntax highlighting. Optionally, you can also write the name of your code after the programming language.
-
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
+```sql
+SELECT 
+    [sequential_column,] [partition_column,] column_name, ...
+    thanosql.generate(
+        engine := 'engine_name',
+        input := [column_name | 'input_text'],
+        model := 'model_name',
+        model_args := 'model_args_in_json',
+        token := 'auth_token'
+    ) AS generated_text
+FROM 
+    table_name
 ```
 
-````md
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
+## Parameters
+
+| Parameter   | Type   | Default          | Description                                                                                           | Options                                                                                                    |
+|-------------|--------|------------------|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| `engine`    | string | `'huggingface'`  | The engine to use for text generation.                                                                | `'huggingface'`: Uses models from HuggingFace. `'thanosql'`: Uses ThanoSQL's native models. `'openai'`: Uses models from OpenAI.  |
+| `input`     | string |                  | The input text based on which the text generation will occur.                                         | N/A                                                                                                        |
+| `model`     | string |                  | The name or path of the pre-trained text generation model.                                            | Example: `'meta-llama/Meta-Llama-3-8B'`                                                                    |
+| `model_args`| json   | `None`           | JSON string representing additional arguments for the model.                                          | Example: `'{"max_new_tokens": 50}'` Common Parameters: `max_new_tokens`, `temperature`, `top_p`, `top_k` |
+| `token`     | string | `None`           | Token for authentication if required by the model.                                                    | N/A                                                                                                        |
+
+
+## Returns
+
+- **str**: The generated text based on the input.
+
+## Example Usage
+
+### Using Hugging Face Generation Models
+Here is an example of how to use the `generate` function using Hugging Face LLM:
+
+```sql
+SELECT "CallID",
+    thanosql.generate(
+        input := prompt,
+        engine := 'huggingface',
+        model := 'mistralai/Mistral-7B-Instruct-v0.2',
+        token := 'huggingface_token',
+        model_args := '{"max_new_tokens": 7}'
+    ) AS summary
+FROM
+    transcript
 ```
-````
+On execution, we get: 
+```
+CallID | summary
+-------|---------
+1      | This call was in regards to a customer inquiry about the status of their recent order. The customer expressed frustration about delays.
+2      | The quick brown fox jumps over the lazy dog near the river bank...
+```
+
+<Note>Please note that you would need to create an access token from Hugging Face and usage grant from the gated models like Mistral and Llama in order to use those models.</Note>
+
+### Using ThanoSQL Generation Models
+Here is an example of how to use the `generate` function using ThanoSQL LLM:
+
+```sql
+SELECT "TicketID",
+    thanosql.generate(
+        input := issue_description,
+        engine := 'thanosql',
+        model := 'smartmind/ThanoSQL-AICC-llm',
+        model_args := '{"max_new_tokens": 50}'
+    ) AS troubleshooting_steps
+FROM
+    support_tickets
+```
+On execution, we get: 
+```
+TicketID | troubleshooting_steps
+---------|--------------------------------------------------------------
+101      | 1. Verify internet connection. 2. Clear browser cache. 3. Reset password. 4. Contact support if the issue persists.
+102      | 1. Reboot the system. 2. Check for software updates. 3. Reinstall the application. 4. Reach out to technical support.
+```
+
+<Note>Please note that you don’t need to input token here.</Note>
+
+### Using OpenAI Generation Models
+Here is an example of how to use the `generate` function using OpenAI LLM:
+
+```sql
+SELECT "ProductID",
+    thanosql.generate(
+        input := product_details,
+        engine := 'openai',
+        model := 'gpt-4o',
+        token := 'openai_api_key',
+        model_args := '{"temperature": 0.7, "max_tokens": 50}'
+    ) AS promotional_content
+FROM
+    product_catalog
+```
+On execution, we get: 
+```
+ProductID | promotional_content
+----------|--------------------------------------------------------------
+5001      | Discover the amazing features of our new smartphone! Experience cutting-edge technology and unparalleled performance.
+5002      | Get ready for summer with our latest collection of stylish and comfortable outdoor furniture. Perfect for any patio or garden.
+```
+
+<Note>Please note that you would need to create an api key from OpenAI.</Note>
+
+## Model Restrictions
+<Warning>
+When using the `generate` function with the `huggingface` engine, ensure that only models compatible with the HuggingFace pipeline are used. Verify that the selected model is supported by the HuggingFace library to avoid compatibility issues. For more information, refer to the official [Hugging Face documentation](https://huggingface.co/docs/transformers/v4.41.3/en/main_classes/pipelines#transformers.TextGenerationPipeline).
+</Warning>
+
+
+## Advanced Configuration
+
+The `generate` function allows for advanced configuration through the `model_args` parameter, which accepts additional model arguments in JSON format. This enables fine-tuning of the text generation process to better suit specific needs.
+
+### Common Model Arguments
+
+Here are some common parameters you can use with `model_args`:
+
+| Parameter        | Type    | Description                                                                                           |
+|------------------|---------|-------------------------------------------------------------------------------------------------------|
+| `max_new_tokens` | integer | Maximum number of tokens to generate.                                                                 |
+| `temperature`    | float   | Sampling temperature. Lower values make output more focused, higher values make it more random.       |
+| `top_p`          | float   | Nucleus sampling probability. Controls diversity by sampling from the top probability mass.           |
+| `top_k`          | integer | Limits the sampling pool to the top `k` tokens, reducing randomness.                                  |
+
+### Example Configurations
+
+1. **Generating Short, Focused Text**
+
+   To generate short and focused text, you might want to use lower values for `max_new_tokens` and `temperature`:
+
+   ```sql
+   SELECT "CallID",
+       thanosql.generate(
+           input := prompt,
+           engine := 'openai',
+           model := 'gpt-4o',
+           token := 'openai_api_key',
+           model_args := '{"max_new_tokens": 10, "temperature": 0.3}'
+       ) AS summary
+   FROM
+       transcript
+   ```
+
+2. **Generating Creative Content**
+
+   For more creative and diverse outputs, you can increase the `temperature` and use `top_p`:
+
+   ```sql
+   SELECT "ProductID",
+       thanosql.generate(
+           input := product_details,
+           engine := 'openai',
+           model := 'gpt-4o',
+           token := 'openai_api_key',
+           model_args := '{"max_new_tokens": 50, "temperature": 0.9, "top_p": 0.95}'
+       ) AS promotional_content
+   FROM
+       product_catalog
+   ```
+
+3. **Controlling Output Length**
+
+   If you need to control the length of the generated text, adjust the `max_new_tokens` parameter accordingly:
+
+   ```sql
+   SELECT "ArticleID",
+       thanosql.generate(
+           input := article_intro,
+           engine := 'huggingface',
+           model := 'mistralai/Mistral-7B-Instruct-v0.2',
+           model_args := '{"max_new_tokens": 150, "temperature": 0.7}'
+       ) AS expanded_intro
+   FROM
+       news_articles
+   ```
+
+4. **Limiting Randomness**
+
+   To limit randomness and ensure more predictable outputs, you can use `top_k`:
+
+   ```sql
+   SELECT "StoryID",
+       thanosql.generate(
+           input := story_intro,
+           engine := 'huggingface',
+           model := 'mistralai/Mistral-7B-Instruct-v0.2',
+           model_args := '{"max_new_tokens": 100, "temperature": 0.5, "top_k": 50}'
+       ) AS story_continuation
+   FROM
+       short_stories
+   ```
+
+These configurations allow you to tailor the text generation to your specific needs, providing flexibility in how the `generate` function behaves.
+
+
+## Related Functions
+
+- [Embed Function](functions/embed)
+- [Predict Function](functions/predict)
+
+For more detailed information on other functions and how to use them, refer to the [ThanoSQL Functions](functions) section.
+
+
+
+
+
