@@ -13,6 +13,7 @@ SELECT
         input := [column_name | 'input_text_or_path'],
         model := 'model_name',
         model_args := 'model_args_in_json',
+        tokenizer_args := 'tokenizer_args_in_json',
         token := 'auth_token'
     ) AS embedding
 FROM 
@@ -21,13 +22,14 @@ FROM
 
 ## Parameters
 
-| Parameter   | Type   | Default          | Description                                                                                           | Options                                                                                                    |
-|-------------|--------|------------------|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
-| `engine`    | string | `'huggingface'`  | The engine to use for generating embeddings.                                                                | `'huggingface'`: Uses models from HuggingFace. `'thanosql'`: Uses ThanoSQL's native models. `'openai'`: Uses models from OpenAI.  |
-| `input`     | string |                  | The input data based on which the embeddings will be generated. It can be text or a path to an image. | N/A                                                                                                        |
-| `model`     | string |                  | The name or path of the pre-trained text generation model.                                            | Example: `'openai/clip-vit-base-patch32'`                                                                    |
-| `model_args`| json   | `None`           | JSON string representing additional arguments for the model.                                          | N/A |
-| `token`     | string | `None`           | Token for authentication if required by the model.                                                    | N/A                                                                                                        |
+| Parameter       | Type   | Default          | Description                                                                                           | Options                                                                                                    |
+|-----------------|--------|------------------|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| `engine`        | string | `'huggingface'`  | The engine to use for generating embeddings.                                                          | `'huggingface'`: Uses models from HuggingFace.`'thanosql'`: Uses ThanoSQL's native models.`'openai'`: Uses models from OpenAI.  |
+| `input`         | string |                  | The input data based on which the embeddings will be generated. It can be text or a path to an image. | N/A                                                                                                        |
+| `model`         | string |                  | The name or path of the pre-trained text generation model.                                            | Example: `'openai/clip-vit-base-patch32'`                                                                    |
+| `model_args`    | json   | `None`           | JSON string representing additional arguments for the model.                                          | N/A                          |
+| `tokenizer_args`| json   | `None`           | JSON string representing additional arguments for the tokenizer.                                      | N/A                                                                                                        |
+| `token`         | string | `None`           | Token for authentication if required by the model.                                                    | N/A                                                                                                        |
 
 
 ## Returns
