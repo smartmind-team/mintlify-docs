@@ -12,16 +12,68 @@ ultimately enhancing the efficiency of both development and operational workflow
 
 ## How does it work?
 
+ThanoSQL combines traditional relational databases with advanced AI models and vector databases.
+It provides a seamless interface for interacting with data, generating insights, and leveraging the power of large language models (LLMs).
+The following diagram illustrates the core components of ThanoSQL and how they work together:
+
 <img
-  className="block dark:hidden"
-  src="/images/hero-light.svg"
-  alt="Hero Light"
+  style={{ borderRadius: '0.5rem' }}
+  src="images/intro.png"
 />
-<img
-  className="hidden dark:block"
-  src="/images/hero-dark.svg"
-  alt="Hero Dark"
-/>
+
+### Interface
+
+ThanoSQL provides two primary interfaces for interacting with the platform:
+
+1. **REST API**: A RESTful API that allows developers to integrate ThanoSQL functionality into their applications programmatically.
+2. **SDK**: A software development kit that provides a convenient and easy-to-use interface for interacting with ThanoSQL from various programming languages.
+
+### ThanoSQL Functions
+
+At the core of ThanoSQL are three main functions that enable seamless integration of language models with traditional databases:
+
+1. **thanosql.generate()**: This function leverages large language models to generate text based on prompts or queries. It can be used for tasks such as generating reports, summaries, or creative content based on data stored in the database.
+
+2. **thanosql.embed()**: This function converts data from the database into dense vector representations, enabling efficient similarity search and retrieval.
+
+3. **thanosql.predict()**: This function leverages trained models to make inferences.
+
+### Web Apps
+
+ThanoSQL provides web applications for managing and interacting with the platform:
+
+1. **Query Manager**: A user-friendly interface for writing queries, executing them against the database, and retrieving results.
+2. **Lab**: An interactive environment for data exploration, AI/ML modeling, and application development, based on [Jupyter Lab](https://github.com/jupyterlab/jupyterlab).
+3. **File Manager**: A tool for managing and uploading data files to the ThanoSQL Workspace.
+
+### Database
+
+ThanoSQL utilizes two types of databases to store and manage data:
+
+1. **Relational Database (RDB)**: A traditional relational database for storing structured data in tables.
+2. **Vector Database**: A specialized database for storing and indexing dense vector representations of textual data, enabling efficient similarity search and retrieval.
+
+### Models
+
+ThanoSQL supports the use of pre-built models as well as LLMs (Large Language Models):
+
+1. **Pre-built Models**: ThanoSQL provides access to pre-trained models for various tasks.
+2. **LLMs**: Users can integrate their own custom-trained large language models into the ThanoSQL platform, enabling specialized and domain-specific language model capabilities.
+
+## Demo Video
+
+The "Query Everything" demo showcases the power and versatility of ThanoSQL, a SQL-based query engine designed to handle data from diverse sources seamlessly.
+This sample application demonstrates how ThanoSQL can query and analyze data from various sources, including databases, APIs, files, and more, using a unified SQL interface.
+
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/yErMMlcd8b0?si=duzIVeaau2whcrj-"
+  title="YouTube video player"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+  style={{ width: '100%', borderRadius: '0.5rem' }}
+></iframe>
 
 ## Setting up
 

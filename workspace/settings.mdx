@@ -1,0 +1,68 @@
+---
+title: 'Settings'
+---
+
+You can access general workspace information, usage logs, and data required for development, such as API tokens.
+You can navigate to these options by clicking on the settings icon in the workspace list on the Main page or the settings icon at the bottom left of the Service page.
+
+## General
+
+### Workspace Start / Stop
+
+You can start/stop the workspace and check its status.
+
+![start-stop](images/workspace/setting-start-stop.png)
+
+### Plan
+
+You can check the Tier, Name and Description of the workspace's plan.
+
+<Tip>
+  It is possible to apply for an upgrade of the plan through the Upgrade button.
+</Tip>
+
+### Subscription
+
+This section shows the remaining subscription period of the workspace.
+
+<Info>
+  After the subscription period expires, you can request to update the subscription period by using the Upgrade button.
+</Info>
+
+<Warning>
+  Please contact us in case your Workspace needs to be deleted. Your Workspace data will be permanently deleted once your request is processed. Be aware that this action cannot be reversed.
+</Warning>
+
+## Log
+
+### Workspace Usage
+
+View your Workspace Usage in a graph.
+
+<img
+  style={{ borderRadius: '0.5rem' }}
+  src="images/workspace/setting-usage.png"
+/>
+
+### Workspace Log
+
+View the most recent logs of your Workspace. Click on the **View All Button** to view all logs.
+
+## Developer
+
+### Engine URL
+
+The Engine URL is the endpoint used when making REST API requests to your Workspace.
+
+<Info>
+  Engine URL is uniquely assigned to your workspace.
+</Info>
+
+### API Token
+
+The API Token is a unique security key used to authenticate and authorize API requests.
+This token must be included in the authentication header when making API calls, allowing the server to identify the user and verify the request's validity. For privacy and security reasons, the token should be refreshed periodically.
+
+<Warning>
+  Be aware that refreshing your API Token will automatically expire your previous tokens.
+</Warning>
