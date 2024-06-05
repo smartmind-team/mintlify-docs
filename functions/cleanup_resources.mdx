@@ -1,0 +1,27 @@
+# Cleanup Resources Function
+
+The `cleanup_resources` function in ThanoSQL is designed to clear all loaded resources including models, tokenizers, and pipelines. This helps in managing memory and ensuring that resources are properly freed after use.
+
+## Syntax 
+
+```sql
+SELECT * FROM thanosql.cleanup_resources();
+```
+
+## Parameters
+This function does not take any parameters.
+
+## Returns
+TABLE (result text): A message indicating the success or failure of the resource cleanup process.
+
+## Example Usage
+Here is an example of how to use the `cleanup_resources` function:
+```sql
+SELECT * FROM thanosql.cleanup_resources();
+```
+On execution, we get:
+```
+result
+------------------------------
+Resources cleared successfully.
+```

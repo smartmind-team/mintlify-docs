@@ -73,7 +73,8 @@
       "pages": [
         "functions/generate",
         "functions/embed",
-        "functions/predict"
+        "functions/predict",
+        "functions/cleanup_resources"
       ]
     },
     {

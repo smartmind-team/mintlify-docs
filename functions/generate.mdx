@@ -136,6 +136,15 @@ Once upon a time in a faraway land, there lived a wise old owl who had seen many
 When using the `generate` function with the `huggingface` engine, ensure that only models compatible with the HuggingFace pipeline are used. Verify that the selected model is supported by the HuggingFace library to avoid compatibility issues. For more information, refer to the official [Hugging Face documentation](https://huggingface.co/docs/transformers/v4.41.3/en/main_classes/pipelines#transformers.TextGenerationPipeline).
 </Warning>
 
+## Best Practices
+<Tip>
+To optimize resource management in a limited environment, especially when loading and using different LLM models, it is advisable to use the `cleanup_resources` function after loading up the LLM model. This helps prevent models from being loaded in CPU memory, which is particularly useful in a workspace with limited resources.
+```sql
+SELECT * FROM thanosql.cleanup_resources();
+```
+This function clears all loaded resources, including models, tokenizers, and pipelines, ensuring that resources are properly freed after use.
+</Tip>
+
 ## Advanced Configuration
 
 The `generate` function allows for advanced configuration through the `model_args` parameter, which accepts additional model arguments in JSON format. This enables fine-tuning of the text generation process to better suit specific needs.
