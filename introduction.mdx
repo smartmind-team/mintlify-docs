@@ -32,19 +32,34 @@ ThanoSQL provides two primary interfaces for interacting with the platform:
 
 At the core of ThanoSQL are three main functions that enable seamless integration of language models with traditional databases:
 
-1. **thanosql.generate()**: This function leverages large language models to generate text based on prompts or queries. It can be used for tasks such as generating reports, summaries, or creative content based on data stored in the database.
+<Card
+  title="thanosql.generate()"
+  href="/functions/generate"
+>
+  Generate text based on a given input using a pre-trained text generation model.
+</Card>
 
-2. **thanosql.embed()**: This function converts data from the database into dense vector representations, enabling efficient similarity search and retrieval.
+<Card
+  title="thanosql.embed()"
+  href="/functions/embed"
+>
+  Generate embeddings for given input data using a pre-trained model.
+</Card>
 
-3. **thanosql.predict()**: This function leverages trained models to make inferences.
+<Card
+  title="thanosql.predict()"
+  href="/functions/predict"
+>
+  Perform various prediction tasks using pre-trained models.
+</Card>
 
 ### Web Apps
 
 ThanoSQL provides web applications for managing and interacting with the platform:
 
-1. **Query Manager**: A user-friendly interface for writing queries, executing them against the database, and retrieving results.
-2. **Lab**: An interactive environment for data exploration, AI/ML modeling, and application development, based on [Jupyter Lab](https://github.com/jupyterlab/jupyterlab).
-3. **File Manager**: A tool for managing and uploading data files to the ThanoSQL Workspace.
+1. [Query Manager](/workspace/qm): A user-friendly interface for writing queries, executing them against the database, and retrieving results.
+2. [Lab](/workspace/lab): An interactive environment for data exploration, AI/ML modeling, and application development, based on [Jupyter Lab](https://github.com/jupyterlab/jupyterlab).
+3. [File Manager](/workspace/fm): A tool for managing and uploading data files to the ThanoSQL Workspace.
 
 ### Database
 
