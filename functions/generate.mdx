@@ -1,3 +1,4 @@
+
 # Generate Function
 
 The `generate` function in ThanoSQL is designed to generate text based on a given input using a pre-trained text generation model. This function leverages the capabilities of the HuggingFace Transformers library to provide efficient and high-quality text generation.
@@ -109,11 +110,31 @@ ProductID | promotional_content
 
 <Note>Please note that you would need to create an api key from OpenAI.</Note>
 
+## Standalone Usage
+Here is an example of how to use the generate function as a standalone query:
+
+```sql
+SELECT 
+    thanosql.generate(
+        engine := 'huggingface',
+        input := 'Once upon a time in a faraway land',
+        model := 'gpt-3',
+        model_args := '{"temperature": 0.7, "max_new_tokens": 50}',
+        token := 'your_authentication_token'
+    ) AS generated_text
+```
+On execution, we get: 
+```
+generated_text
+------------------------------
+Once upon a time in a faraway land, there lived a wise old owl who had seen many seasons come and go...
+```
+
+
 ## Model Restrictions
 <Warning>
 When using the `generate` function with the `huggingface` engine, ensure that only models compatible with the HuggingFace pipeline are used. Verify that the selected model is supported by the HuggingFace library to avoid compatibility issues. For more information, refer to the official [Hugging Face documentation](https://huggingface.co/docs/transformers/v4.41.3/en/main_classes/pipelines#transformers.TextGenerationPipeline).
 </Warning>
-
 
 ## Advanced Configuration
 
@@ -123,12 +144,14 @@ The `generate` function allows for advanced configuration through the `model_arg
 
 Here are some common parameters you can use with `model_args`:
 
+
 | Parameter        | Type    | Description                                                                                           |
 |------------------|---------|-------------------------------------------------------------------------------------------------------|
 | `max_new_tokens` | integer | Maximum number of tokens to generate.                                                                 |
 | `temperature`    | float   | Sampling temperature. Lower values make output more focused, higher values make it more random.       |
 | `top_p`          | float   | Nucleus sampling probability. Controls diversity by sampling from the top probability mass.           |
 | `top_k`          | integer | Limits the sampling pool to the top `k` tokens, reducing randomness.                                  |
+
 
 ### Example Configurations
 
@@ -200,15 +223,9 @@ Here are some common parameters you can use with `model_args`:
 
 These configurations allow you to tailor the text generation to your specific needs, providing flexibility in how the `generate` function behaves.
 
-
 ## Related Functions
 
 - [Embed Function](functions/embed)
 - [Predict Function](functions/predict)
 
 For more detailed information on other functions and how to use them, refer to the [ThanoSQL Functions](functions) section.
-
-
-
-
-
