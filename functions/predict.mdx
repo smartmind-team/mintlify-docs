@@ -1,37 +1,202 @@
 ---
-title: 'Code Blocks'
-description: 'Display inline code and code blocks'
-icon: 'code'
+title: 'Predict'
+description: 'thanosql.predict()'
 ---
 
-## Basic
+The `predict` function in ThanoSQL is designed to perform various prediction tasks using pre-trained models. This function supports a range of tasks, leveraging the capabilities of different engines.
 
-### Inline Code
+## Syntax 
 
-To denote a `word` or `phrase` as code, enclose it in backticks (`).
-
+```sql
+SELECT 
+    [sequential_column,] [partition_column,] column_name, ...
+    thanosql.predict(
+        task := 'task_name',
+        engine := 'engine_name',
+        input := [column_name | 'input_data'],
+        model := 'model_name',
+        model_args := 'model_args_in_json',
+        pipeline_args := 'pipeline_args_in_json',
+        task_args := 'task_args_in_json',
+        token := 'auth_token'
+    ) AS prediction
+FROM 
+    table_name
 ```
-To denote a `word` or `phrase` as code, enclose it in backticks (`).
+
+## Parameters
+
+| Parameter       | Type   | Default         | Description                                                                                           | Options                                                                                                                                              |
+|-----------------|--------|-----------------|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `task`          | string |                 | The prediction task to perform.                                                                       | `'text-classification'`, `'sentiment-analysis'`, `'image-classification'`, `'image-segmentation'`, `'audio-classification'`, `'automatic-speech-recognition'`, `'video-classification'` |
+| `engine`        | string | `'huggingface'` | The engine to use for performing predictions.                                                         | `'huggingface'`: Uses models from HuggingFace.             |
+| `input`         | string |                 | The input data for the prediction task. It can be text, an image URL, or a path to a local file.       | N/A                                                                                                                                                  |
+| `model`         | string |                 | The name or path of the pre-trained model.                                                            | Example: `'google-bert/bert-base-uncased'`                                                                                                                        |
+| `model_args`    | json   | `None`          | JSON string representing additional arguments for the model.                                          | N/A                                                                   |
+| `pipeline_args` | json   | `None`          | JSON string representing additional arguments for the pipeline.                                       | N/A                                                                                                                                                  |
+| `task_args`     | json   | `None`          | JSON string representing additional arguments specific to the task.                                   | N/A                                                                                                                                                  |
+| `token`         | string | `None`          | Token for authentication if required by the model.                                                    | N/A                                                                                                                                                  |
+
+
+## Returns
+
+- **varies**: The prediction result based on the task.
+
+## Currently Supported Tasks 
+- **Text Classification**
+- **Sentiment Analysis**
+- **Image Classification**
+- **Image Segmentation**
+- **Audio Classification**
+- **Automatic Speech Recognition**
+
+
+## Example Usage
+
+### Text Classification
+Here is an example of how to use the `predict` function for text classification using a Hugging Face model:
+
+```sql
+SELECT "TextID",
+    thanosql.predict(
+        task := 'text-classification',
+        engine := 'huggingface',
+        input := text_column,
+        model := 'google-bert/bert-base-uncased',
+        token := 'huggingface_token'
+    ) AS prediction
+FROM
+    documents
+```
+On execution, we get: 
+```
+TextID | prediction
+-------|---------------
+1      | {'label': 'NEGATIVE', 'score': 0.998}
+2      | {'label': 'POSITIVE', 'score': 0.987}
 ```
 
-### Code Block
+<Note>Please note that you would need to create an access token from Hugging Face to use certain models.</Note>
 
-Use [fenced code blocks](https://www.markdownguide.org/extended-syntax/#fenced-code-blocks) by enclosing code in three backticks and follow the leading ticks with the programming language of your snippet to get syntax highlighting. Optionally, you can also write the name of your code after the programming language.
+### Sentiment Analysis
+Here is an example of how to use the `predict` function for sentiment analysis using a Hugging Face model:
 
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
+```sql
+SELECT "TextID",
+    thanosql.predict(
+        task := 'sentiment-analysis',
+        engine := 'huggingface',
+        input := text_column,
+        model := 'distilbert/distilbert-base-uncased',
+        token := 'huggingface_token'
+    ) AS prediction
+FROM
+    reviews
+```
+On execution, we get: 
+```
+TextID | prediction
+-------|---------------
+1      | {'label': 'POSITIVE', 'score': 0.95}
+2      | {'label': 'NEGATIVE', 'score': 0.80}
 ```
 
-````md
-```java HelloWorld.java
-class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
+
+### Image Classification
+Here is an example of how to use the `predict` function for image classification using a Hugging Face model:
+
+```sql
+SELECT "ImageID",
+    thanosql.predict(
+        task := 'image-classification',
+        engine := 'huggingface',
+        input := image_path,
+        model := 'google/vit-base-patch16-224',
+        model_args := '{"batch_size": 8}',
+        token := 'huggingface_token'
+    ) AS prediction
+FROM
+    images
 ```
-````
+On execution, we get: 
+```
+ImageID | prediction
+--------|---------------
+1       | {'label': 'Egyptian cat', 'score': 0.99}
+2       | {'label': 'Pembroke', 'score': 0.98}
+```
+
+### Image Segmentation
+Here is an example of how to use the `predict` function for image segmentation using a Hugging Face model:
+
+```sql
+SELECT "ImageID",
+    thanosql.predict(
+        task := 'image-segmentation',
+        engine := 'huggingface',
+        input := image_path,
+        model := 'facebook/detr-resnet-101-panoptic',
+        token := 'huggingface_token'
+    ) AS prediction
+FROM
+    images
+```
+On execution, we get: 
+```
+ImageID | prediction
+--------|---------------
+1       | {'objects': ['person', 'bicycle'], 'scores': [0.95, 0.89]}
+2       | {'objects': ['cat', 'dog'], 'scores': [0.98, 0.92]}
+```
+
+### Audio Classification
+Here is an example of how to use the `predict` function for audio classification using a Hugging Face model:
+
+```sql
+SELECT "AudioID",
+    thanosql.predict(
+        task := 'audio-classification',
+        engine := 'huggingface',
+        input := audio_path,
+        model := 'superb/wav2vec2-base-superb-ks',
+        token := 'huggingface_token'
+    ) AS prediction
+FROM
+    audio_files
+```
+On execution, we get: 
+```
+AudioID | prediction
+--------|---------------
+1       | {'label': 'speech', 'score': 0.99}
+2       | {'label': 'music', 'score': 0.97}
+```
+
+### Automatic Speech Recognition
+Here is an example of how to use the `predict` function for automatic speech recognition using a Hugging Face model:
+
+```sql
+SELECT "AudioID",
+    thanosql.predict(
+        task := 'automatic-speech-recognition',
+        engine := 'huggingface',
+        input := audio_path,
+        model := 'facebook/wav2vec2-large-960h',
+        token := 'huggingface_token'
+    ) AS prediction
+FROM
+    audio_files
+```
+On execution, we get: 
+```
+AudioID | prediction
+--------|---------------
+1       | "Hello, how can I help you today?"
+2       | "This is a test of the speech recognition system."
+```
+
+## Model Restrictions
+<Warning>
+When using the `predict` function with the `huggingface` engine, ensure that only models compatible with the HuggingFace pipeline are used. Verify that the selected model is supported by the HuggingFace library to avoid compatibility issues. For more information, refer to the official [Hugging Face documentation](https://huggingface.co/docs/transformers/main_classes/pipelines).
+</Warning>
+

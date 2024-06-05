@@ -1,5 +1,7 @@
-
-# Generate Function
+---
+title: 'Generate'
+description: 'thanosql.generate()'
+---
 
 The `generate` function in ThanoSQL is designed to generate text based on a given input using a pre-trained text generation model. This function leverages the capabilities of the HuggingFace Transformers library to provide efficient and high-quality text generation.
 
@@ -110,7 +112,7 @@ ProductID | promotional_content
 
 <Note>Please note that you would need to create an api key from OpenAI.</Note>
 
-## Standalone Usage
+### Standalone Usage
 Here is an example of how to use the generate function as a standalone query:
 
 ```sql
@@ -135,6 +137,15 @@ Once upon a time in a faraway land, there lived a wise old owl who had seen many
 <Warning>
 When using the `generate` function with the `huggingface` engine, ensure that only models compatible with the HuggingFace pipeline are used. Verify that the selected model is supported by the HuggingFace library to avoid compatibility issues. For more information, refer to the official [Hugging Face documentation](https://huggingface.co/docs/transformers/v4.41.3/en/main_classes/pipelines#transformers.TextGenerationPipeline).
 </Warning>
+
+## Best Practices
+<Tip>
+To optimize resource management in a limited environment, especially when loading and using different LLM models, it is advisable to use the `cleanup_resources` function after loading up the LLM model. This helps prevent models from being loaded in CPU memory, which is particularly useful in a workspace with limited resources.
+```sql
+SELECT * FROM thanosql.cleanup_resources();
+```
+This function clears all loaded resources, including models, tokenizers, and pipelines, ensuring that resources are properly freed after use.
+</Tip>
 
 ## Advanced Configuration
 
@@ -223,9 +234,4 @@ Here are some common parameters you can use with `model_args`:
 
 These configurations allow you to tailor the text generation to your specific needs, providing flexibility in how the `generate` function behaves.
 
-## Related Functions
 
-- [Embed Function](functions/embed)
-- [Predict Function](functions/predict)
-
-For more detailed information on other functions and how to use them, refer to the [ThanoSQL Functions](functions) section.
