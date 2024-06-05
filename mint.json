@@ -161,7 +161,7 @@
     "website": "https://thanosql.com",
     "github": "https://github.com/smartmind-team"
   },
-  "openapi": "https://api-testing.thanosql.com/openapi.json",
+  "openapi": "api-reference/openapi.json",
   "api": {
     "baseUrl": "https://your-engine-url",
     "auth":{
