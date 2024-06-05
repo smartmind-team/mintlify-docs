@@ -77,6 +77,16 @@
       ]
     },
     {
+      "group": "Workspace",
+      "pages": [
+        "workspace/overview",
+        "workspace/query-manager",
+        "workspace/lab",
+        "workspace/file-manager",
+        "workspace/settings"
+      ]
+    },
+    {
       "group": "Use Cases",
       "pages": [
         "use-cases/introduction"
