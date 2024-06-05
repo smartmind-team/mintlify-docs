@@ -106,6 +106,12 @@
       ]
     },
     {
+      "group": "FAQs",
+      "pages": [
+        "faq/why-thanosql"
+      ]
+    },
+    {
       "group": "query",
       "pages": [
         "api-reference/query/post-query",
