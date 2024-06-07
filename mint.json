@@ -33,6 +33,10 @@
     {
       "name": "API Reference",
       "url": "api-reference"
+    },
+    {
+      "name": "FAQs",
+      "url": "faq"
     }
   ],
   "anchors": [
@@ -56,7 +60,8 @@
     {
       "group": "Get Started",
       "pages": [
-        "introduction"
+        "introduction",
+        "quickstart"
       ]
     },
     {
