@@ -5,6 +5,10 @@ description: 'thanosql.generate()'
 
 The `generate` function in ThanoSQL is designed to generate text based on a given input using a pre-trained text generation model. This function leverages the capabilities of the HuggingFace Transformers library to provide efficient and high-quality text generation.
 
+<Warning>
+  For the best experience, please use Google Chrome browser.
+</Warning>
+
 ## Syntax 
 
 ```sql
@@ -135,7 +139,7 @@ Once upon a time in a faraway land, there lived a wise old owl who had seen many
 
 ## Model Restrictions
 <Warning>
-When using the `generate` function with the `huggingface` engine, ensure that only models compatible with the HuggingFace pipeline are used. Verify that the selected model is supported by the HuggingFace library to avoid compatibility issues. For more information, refer to the official [Hugging Face documentation](https://huggingface.co/docs/transformers/v4.41.3/en/main_classes/pipelines#transformers.TextGenerationPipeline).
+When using the `generate` function with the `huggingface` engine, ensure that only models compatible with the HuggingFace pipeline are used. Verify that the selected model is supported by the HuggingFace library to avoid compatibility issues. Even with compatible models, some models might still not work. We are actively working on improving compatibility and functionality to provide a better user experience. For more information, refer to the official [Hugging Face documentation](https://huggingface.co/docs/transformers/v4.41.3/en/main_classes/pipelines#transformers.TextGenerationPipeline).
 </Warning>
 
 ## Best Practices
