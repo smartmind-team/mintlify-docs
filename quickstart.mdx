@@ -1,86 +1,113 @@
 ---
 title: 'Quickstart'
-description: 'Start building awesome documentation in under 5 minutes'
+description: 'ThanoSQL Quick Start Guide'
 ---
 
-## Setup your development
+Welcome to ThanoSQL! This guide will help you get started with the basics of using ThanoSQL to integrate AI functionalities into your SQL queries seamlessly.
 
-Learn how to update your docs locally and and deploy them to the public.
+<Warning>
+  For the best experience, please use Google Chrome browser.
+</Warning>
 
-### Edit and preview
+### Prerequisites
 
-<AccordionGroup>
-  <Accordion icon="github" title="Clone your docs locally">
-    During the onboarding process, we created a repository on your Github with
-    your docs content. You can find this repository on our
-    [dashboard](https://dashboard.mintlify.com). To clone the repository
-    locally, follow these
-    [instructions](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-    in your terminal.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Preview changes">
-    Previewing helps you make sure your changes look as intended. We built a
-    command line interface to render these changes locally. 1. Install the
-    [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the
-    documentation changes locally with this command: ``` npm i -g mintlify ```
-    2. Run the following command at the root of your documentation (where
-    `mint.json` is): ``` mintlify dev ```
-  </Accordion>
-</AccordionGroup>
+Before you begin, ensure you have the following:
+- Basic understanding of SQL.
+- Access to the [ThanoSQL Console](https://console.thanosql.com/).
 
-### Deploy your changes
+### Step 1: Setting Up Your Environment
 
-<AccordionGroup>
+1. **Sign In:** Log in to your ThanoSQL account.
+2. **Create a New Workspace:** Navigate to the dashboard and create a new workspace to manage your queries and data. For more information about creating a workspace, check out the [workspace page](/workspace/overview).
 
-<Accordion icon="message-bot" title="Install our Github app">
-  Our Github app automatically deploys your changes to your docs site, so you
-  don't need to manage deployments yourself. You can find the link to install on
-  your [dashboard](https://dashboard.mintlify.com). Once the bot has been
-  successfully installed, there should be a check mark next to the commit hash
-  of the repo.
-</Accordion>
-<Accordion icon="rocket" title="Push your changes">
-  [Commit and push your changes to
-  Git](https://docs.github.com/en/get-started/using-git/pushing-commits-to-a-remote-repository#about-git-push)
-  for your changes to update in your docs site. If you push and don't see that
-  the Github app successfully deployed your changes, you can also manually
-  update your docs through our [dashboard](https://dashboard.mintlify.com).
-</Accordion>
+### Step 2: Uploading Data
 
-</AccordionGroup>
+There are two ways to upload data into ThanoSQL:
 
-## Update your docs
+1. **Using File Manager:**
+   - Go to the 'File Manager' and upload your datasets. ThanoSQL supports various file formats such as CSV, JSON, and more.
+  
+2. **Using the Lab:**
+   - In the 'Lab' section, upload your data using the table upload functionality:
+    ```python
+    table = client.table.upload('unsplash_embed', 'unsplash_embed.csv', if_exists='replace')
+    table.get_records(limit=10).to_df()
+    ```
 
-Add content directly in your files with MDX syntax and React components. You can use any of our components, or even build your own.
+### Step 3: Writing Your First Query
 
-<CardGroup>
+1. **Basic Query:** Retrieve all records from a specified table.
+    ```sql
+    SELECT * FROM your_table_name;
+    ```
+    On execution, we get:
+    ```
+    id | column1 | column2
+    ---|---------|---------
+    1  | value1  | value2
+    2  | value3  | value4
+    ```
 
-<Card title="Style Your Docs" icon="paintbrush" href="/settings/global">
-  Add flair to your docs with personalized branding.
-</Card>
+2. **Using AI Models:** Generate AI-driven insights by specifying an AI model and relevant column.
+    ```sql
+    SELECT thanosql.generate('model_name', 'column_name') FROM your_table_name;
+    ```
+    Replace `model_name` with the specific AI model you want to use and `column_name` with the relevant column in your dataset.
+    On execution, we get:
+    ```
+    id | generated_output
+    ---|-----------------
+    1  | output1
+    2  | output2
+    ```
 
-<Card
-  title="Add API Endpoints"
-  icon="square-code"
-  href="/api-playground/configuration"
->
-  Implement your OpenAPI spec and enable API user interaction.
-</Card>
+### Step 4: Utilizing Pre-Built AI Models
 
-<Card
-  title="Integrate Analytics"
-  icon="chart-mixed"
-  href="/analytics/supported-integrations"
->
-  Draw insights from user interactions with your documentation.
-</Card>
+<Tip>
+To maximize the effectiveness of the pre-built AI models, ensure you familiarize yourself with the ThanoSQL functions before use:
 
-<Card
-  title="Host on a Custom Domain"
-  icon="browser"
-  href="/settings/custom-domain/subdomain"
->
-  Keep your docs on your own website's subdomain.
-</Card>
+- [Generate](/functions/generate)
+- [Embed](/functions/embed)
+- [Predict](/functions/predict)
 
-</CardGroup>
+A thorough understanding of these functions will enable you to leverage the full capabilities of ThanoSQL.
+</Tip>
+
+
+1. **Text Generation:** Generate text based on a given prompt.
+    ```sql
+    SELECT thanosql.generate('model_name', 'Your prompt here') FROM DUAL;
+    ```
+    On execution, we get:
+    ```
+    generated_text
+    ---------------------------
+    Generated text based on prompt
+    ```
+
+2. **Embedding Generation:** Create embeddings for a specific column.
+    ```sql
+    SELECT thanosql.embed('model_name', 'column_name') FROM your_table_name;
+    ```
+    On execution, we get:
+    ```
+    TextID | text_embedding
+    -------|---------------
+    1      | [0.0034567890, -0.008123456, ... , -0.001987654]
+    2      | [0.0045678901, -0.010987654, ... , -0.002345678]
+    ```
+
+### Step 5: Managing Queries and Results
+
+1. **Save Queries as Template:** Save frequently used queries as template for easy access.
+2. **View Results:** Check query results in the Query Manager and use the visualization tools to gain insights from your data.
+
+### More Resources 
+
+For detailed information on how to use ThanoSQL, refer to the [ThanoSQL SDK documentation](/sdk/python).
+
+
+
+### Conclusion
+
+Congratulations! You’ve now completed the Quick Start Guide for ThanoSQL. You are ready to harness the power of AI directly within your SQL queries. Explore more advanced features and integrate sophisticated AI models to elevate your data operations.
