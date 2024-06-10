@@ -57,6 +57,10 @@ We are actively adding more tasks to enhance your experience.
   When using text-generating models with the `huggingface` engine, the default `truncation_policy` is 'strict'. This could result in an error if the token count exceeds the model's limit. If this happens, reduce the text length or use `pipeline_args = "{'truncation_policy': True}"`.
 </Tip>
 
+<Warning>
+The following examples are provided to help you become familiar with the ThanoSQL syntax. To try out these queries in real scenarios, please visit the [Use Cases](/use-cases/overview) section for detailed tutorials and practical applications.
+</Warning>
+
 ### Text Classification
 Here is an example of how to use the `predict` function for text classification using a Hugging Face model:
 
