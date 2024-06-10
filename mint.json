@@ -102,7 +102,7 @@
     {
       "group": "Use Cases",
       "pages": [
-        "use-cases/introduction",
+        "use-cases/overview",
         "use-cases/use-case-1",
         "use-cases/use-case-2",
         "use-cases/use-case-3"
