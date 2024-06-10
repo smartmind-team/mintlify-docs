@@ -42,7 +42,7 @@ FROM
 Here is an example of how to use the `generate` function using Hugging Face LLM:
 
 ```sql
-SELECT "CallID",
+SELECT 
     thanosql.generate(
         input := prompt,
         engine := 'huggingface',
@@ -55,10 +55,10 @@ FROM
 ```
 On execution, we get: 
 ```
-CallID | summary
--------|---------
-1      | This call was in regards to a customer inquiry about the status of their recent order. The customer expressed frustration about delays.
-2      | The quick brown fox jumps over the lazy dog near the river bank...
+| summary                                                                                                                                 |
+|-----------------------------------------------------------------------------------------------------------------------------------------|
+| This call was in regards to a customer inquiry about the status of their recent order. The customer expressed frustration about delays. |
+| The quick brown fox jumps over the lazy dog near the river bank...                                                                      |
 ```
 
 <Note>Please note that you would need to create an access token from Hugging Face and usage grant from the gated models like Mistral and Llama in order to use those models.</Note>
@@ -67,7 +67,7 @@ CallID | summary
 Here is an example of how to use the `generate` function using ThanoSQL LLM:
 
 ```sql
-SELECT "TicketID",
+SELECT 
     thanosql.generate(
         input := issue_description,
         engine := 'thanosql',
@@ -79,10 +79,10 @@ FROM
 ```
 On execution, we get: 
 ```
-TicketID | troubleshooting_steps
----------|--------------------------------------------------------------
-101      | 1. Verify internet connection. 2. Clear browser cache. 3. Reset password. 4. Contact support if the issue persists.
-102      | 1. Reboot the system. 2. Check for software updates. 3. Reinstall the application. 4. Reach out to technical support.
+| troubleshooting_steps                                                                                                 |
+|---------------------------------------------------------------------------------------------------------------------- |
+| 1. Verify internet connection. 2. Clear browser cache. 3. Reset password. 4. Contact support if the issue persists.   |
+| 1. Reboot the system. 2. Check for software updates. 3. Reinstall the application. 4. Reach out to technical support. |
 ```
 
 <Note>Please note that you don’t need to input token here.</Note>
@@ -91,7 +91,7 @@ TicketID | troubleshooting_steps
 Here is an example of how to use the `generate` function using OpenAI LLM:
 
 ```sql
-SELECT "ProductID",
+SELECT 
     thanosql.generate(
         input := product_details,
         engine := 'openai',
@@ -104,10 +104,10 @@ FROM
 ```
 On execution, we get: 
 ```
-ProductID | promotional_content
-----------|--------------------------------------------------------------
-5001      | Discover the amazing features of our new smartphone! Experience cutting-edge technology and unparalleled performance.
-5002      | Get ready for summer with our latest collection of stylish and comfortable outdoor furniture. Perfect for any patio or garden.
+| promotional_content                                                                                                                 |
+|-------------------------------------------------------------------------------------------------------------------------------------|
+| Discover the amazing features of our new smartphone! Experience cutting-edge technology and unparalleled performance.               |
+| Get ready for summer with our latest collection of stylish and comfortable outdoor furniture. Perfect for any patio or garden.      |
 ```
 
 <Note>Please note that you would need to create an api key from OpenAI.</Note>
@@ -118,18 +118,18 @@ Here is an example of how to use the generate function as a standalone query:
 ```sql
 SELECT 
     thanosql.generate(
-        engine := 'huggingface',
+        engine := 'openai',
         input := 'Once upon a time in a faraway land',
-        model := 'gpt-3',
-        model_args := '{"temperature": 0.7, "max_new_tokens": 50}',
-        token := 'your_authentication_token'
+        model := 'gpt-4o',
+        model_args := '{"temperature": 0.7, "max_tokens": 50}',
+        token := 'openai_api_key'
     ) AS generated_text
 ```
 On execution, we get: 
 ```
-generated_text
-------------------------------
-Once upon a time in a faraway land, there lived a wise old owl who had seen many seasons come and go...
+| generated_text                                                                                           |
+|----------------------------------------------------------------------------------------------------------|
+| Once upon a time in a faraway land, there lived a wise old owl who had seen many seasons come and go...  |
 ```
 
 
@@ -158,26 +158,25 @@ Here are some common parameters you can use with `model_args`:
 
 | Parameter        | Type    | Description                                                                                           |
 |------------------|---------|-------------------------------------------------------------------------------------------------------|
-| `max_new_tokens` | integer | Maximum number of tokens to generate.                                                                 |
+| `max_tokens`(OpenAI), `max_new_tokens`(Hugging Face) | integer | Maximum number of tokens to generate.                                                                 |
 | `temperature`    | float   | Sampling temperature. Lower values make output more focused, higher values make it more random.       |
-| `top_p`          | float   | Nucleus sampling probability. Controls diversity by sampling from the top probability mass.           |
-| `top_k`          | integer | Limits the sampling pool to the top `k` tokens, reducing randomness.                                  |
+| `top_p`          | float   | Nucleus sampling probability. Controls diversity by sampling from the top probability mass. Used as alternative to `tempearture`           |
 
 
 ### Example Configurations
 
 1. **Generating Short, Focused Text**
 
-   To generate short and focused text, you might want to use lower values for `max_new_tokens` and `temperature`:
+   To generate short and focused text, you might want to use lower values for `max_tokens` and `temperature`:
 
    ```sql
-   SELECT "CallID",
+   SELECT 
        thanosql.generate(
            input := prompt,
            engine := 'openai',
            model := 'gpt-4o',
            token := 'openai_api_key',
-           model_args := '{"max_new_tokens": 10, "temperature": 0.3}'
+           model_args := '{"max_tokens": 10, "temperature": 0.3}'
        ) AS summary
    FROM
        transcript
@@ -185,16 +184,16 @@ Here are some common parameters you can use with `model_args`:
 
 2. **Generating Creative Content**
 
-   For more creative and diverse outputs, you can increase the `temperature` and use `top_p`:
+   For more creative and diverse outputs, you can increase the `temperature` or use `top_p` instead:
 
    ```sql
-   SELECT "ProductID",
+   SELECT 
        thanosql.generate(
            input := product_details,
            engine := 'openai',
            model := 'gpt-4o',
            token := 'openai_api_key',
-           model_args := '{"max_new_tokens": 50, "temperature": 0.9, "top_p": 0.95}'
+           model_args := '{"max_tokens": 50, "temperature": 0.9}'
        ) AS promotional_content
    FROM
        product_catalog
@@ -202,10 +201,10 @@ Here are some common parameters you can use with `model_args`:
 
 3. **Controlling Output Length**
 
-   If you need to control the length of the generated text, adjust the `max_new_tokens` parameter accordingly:
+   If you need to control the length of the generated text, adjust the `max_tokens/max_new_tokens` parameter accordingly:
 
    ```sql
-   SELECT "ArticleID",
+   SELECT
        thanosql.generate(
            input := article_intro,
            engine := 'huggingface',
@@ -215,23 +214,4 @@ Here are some common parameters you can use with `model_args`:
    FROM
        news_articles
    ```
-
-4. **Limiting Randomness**
-
-   To limit randomness and ensure more predictable outputs, you can use `top_k`:
-
-   ```sql
-   SELECT "StoryID",
-       thanosql.generate(
-           input := story_intro,
-           engine := 'huggingface',
-           model := 'mistralai/Mistral-7B-Instruct-v0.2',
-           model_args := '{"max_new_tokens": 100, "temperature": 0.5, "top_k": 50}'
-       ) AS story_continuation
-   FROM
-       short_stories
-   ```
-
-These configurations allow you to tailor the text generation to your specific needs, providing flexibility in how the `generate` function behaves.
-
 
