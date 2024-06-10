@@ -63,7 +63,7 @@ We will be working with two datasets:
     print("unsplash_meta_sample:", unsplash_meta_sample.shape, "unsplash_embed_sample:", unsplash_embed_sample.shape)
     ```
     On execution, we get: 
-    ![Load Data](images/use-cases/use-case-2/load-data.png)
+    ![Load Data](/images/use-cases/use-case-2/load-data.png)
     - This step loads the datasets into pandas DataFrames and prints their shapes to give an overview of the data size and structure.
 
 1. **Import ThanoSQL Library**:
@@ -80,7 +80,7 @@ We will be working with two datasets:
     table.get_records(limit=10).to_df()
     ```
     On execution, we get: 
-    ![Table 1](images/use-cases/use-case-2/table-1.png)
+    ![Table 1](/images/use-cases/use-case-2/table-1.png)
     - This step uploads the `unsplash_embed_sample` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
 
     - Similarly, we upload the `unsplash_meta_sample` table which contains detailed metadata about the images.
@@ -89,7 +89,7 @@ We will be working with two datasets:
     table.get_records(limit=10).to_df()
     ```
     On execution, we get: 
-    ![Table 2](images/use-cases/use-case-2/table-2.png)
+    ![Table 2](/images/use-cases/use-case-2/table-2.png)
     - This step uploads the `unsplash_meta_sample` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
 
 3. **Create Embedding Column**:
@@ -106,7 +106,7 @@ We will be working with two datasets:
     query_result.state
     ```
     On execution, we get: 
-    ![Complete](images/use-cases/use-case-2/complete.png)
+    ![Complete](/images/use-cases/use-case-2/complete.png)
     - This step ensures that the `vector` extension is available and adds an embedding column to the `unsplash_embed_sample` table if it does not already exist.
 
 4. **Embed Images**:
@@ -139,7 +139,7 @@ We will be working with two datasets:
     query_result.state
     ```
     On execution, we get: 
-    ![Complete](images/use-cases/use-case-2/complete.png)
+    ![Complete](/images/use-cases/use-case-2/complete.png)
     - This step uses the `openai/clip-vit-base-patch32` model to calculate embeddings for each image and updates the `unsplash_embed_sample` table with these embeddings.
 
 5. **Search by Image**:
@@ -158,7 +158,7 @@ We will be working with two datasets:
     query_result.records.to_df()
     ```
     On execution, we get: 
-    ![Result 1](images/use-cases/use-case-2/result-1.png)
+    ![Result 1](/images/use-cases/use-case-2/result-1.png)
     - This query generates an embedding for the specified image and retrieves it.
 
     - We then use this embedding to find the most similar images in the `unsplash_embed_sample` table.
@@ -181,7 +181,7 @@ We will be working with two datasets:
     query_result.records.to_df()
     ```
     On execution, we get: 
-    ![Result 2](images/use-cases/use-case-2/result-2.png)
+    ![Result 2](/images/use-cases/use-case-2/result-2.png)
     - This query retrieves the three most similar images to the example image based on their embeddings.
 
 6. **Query Metadata for Retrieved Images**:
@@ -224,7 +224,7 @@ We will be working with two datasets:
     df
     ```
     On execution, we get: 
-    ![Result 3](images/use-cases/use-case-2/result-3.png)
+    ![Result 3](/images/use-cases/use-case-2/result-3.png)
     - This query retrieves metadata such as the image URL, submission date, dimensions, and photographer information for the images found in the previous step.
 
 7. **Display Retrieved Images**:
@@ -255,7 +255,7 @@ We will be working with two datasets:
     show_images(df, 'photo_image_url')
     ```
     On execution, we get: 
-    ![Image Display 1](images/use-cases/use-case-2/image-display-1.png)
+    ![Image Display 1](/images/use-cases/use-case-2/image-display-1.png)
     - This code fetches and displays the images using their paths from the metadata.
 
 8. **Search by Text**:
@@ -279,7 +279,7 @@ We will be working with two datasets:
     query_result.records.to_df()
     ```
     On execution, we get: 
-    ![Result 4](images/use-cases/use-case-2/result-4.png)
+    ![Result 4](/images/use-cases/use-case-2/result-4.png)
     - This query generates an embedding for the text description and retrieves the most similar image based on its embedding.
 
     - We then retrieve the meta information for the retrieved image.
@@ -320,7 +320,7 @@ We will be working with two datasets:
     df
     ```
     On execution, we get: 
-    ![Result 5](images/use-cases/use-case-2/result-5.png)
+    ![Result 5](/images/use-cases/use-case-2/result-5.png)
     - This query retrieves metadata for the image that matches the text description.
 
     - Finally, we display the retrieved image.
@@ -328,7 +328,7 @@ We will be working with two datasets:
     show_images(df, 'photo_image_url')
     ```
     On execution, we get: 
-    ![Image Display 2](images/use-cases/use-case-2/image-display-2.png)
+    ![Image Display 2](/images/use-cases/use-case-2/image-display-2.png)
     - This code fetches and displays the image using its URL from the metadata.
 
 ### Conclusion

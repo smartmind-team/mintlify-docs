@@ -41,7 +41,7 @@ We will be working with the following datasets:
     table.get_records(limit=10).to_df()
     ```
     On execution, we get: 
-    ![Sales Data Table](images/use-cases/use-case-3/table-1.png)
+    ![Sales Data Table](/images/use-cases/use-case-3/table-1.png)
     - This step uploads the `review_sales` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
 
     - Upload the `review_comments` table which contains textual reviews of products.
@@ -50,7 +50,7 @@ We will be working with the following datasets:
     table.get_records(limit=10).to_df()
     ```
     On execution, we get: 
-    ![Review Comments Table](images/use-cases/use-case-3/table-2.png)
+    ![Review Comments Table](/images/use-cases/use-case-3/table-2.png)
     - This step uploads the `review_comments` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
 
     - Upload the `review_comments_sentiment` table which contains product reviews along with their sentiment classification.
@@ -59,7 +59,7 @@ We will be working with the following datasets:
     table.get_records(limit=10).to_df()
     ```
     On execution, we get: 
-    ![Review Comments Sentiment Table](images/use-cases/use-case-3/table-3.png)
+    ![Review Comments Sentiment Table](/images/use-cases/use-case-3/table-3.png)
     - This step uploads the `review_comments_sentiment` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
 
 3. **Classify Reviews and Aggregate Sales Data**:
@@ -86,7 +86,7 @@ We will be working with the following datasets:
       query_result.records.to_df()
       ```
     On execution, we get: 
-    ![Predicted Sentiment](images/use-cases/use-case-3/result-1.png)
+    ![Predicted Sentiment](/images/use-cases/use-case-3/result-1.png)
       - This query predicts the sentiment of each review using the `distilbert-base-uncased-emotion` model and retrieves the first 10 predictions to confirm the process.
 
     - **Link Reviews with Sales Data**:
@@ -127,7 +127,7 @@ We will be working with the following datasets:
       query_result.records.to_df()
       ```
     On execution, we get: 
-    ![Linked Reviews and Sales Data](images/use-cases/use-case-3/result-2.png)
+    ![Linked Reviews and Sales Data](/images/use-cases/use-case-3/result-2.png)
       - This query links the reviews with sales data by grouping them by `ProductId` and `Sentiment`. It calculates the total quantity sold and the count of each sentiment for each product.
 
     - **Analyze Positive Reviews and Sales Performance**:
@@ -193,7 +193,7 @@ We will be working with the following datasets:
       query_result.records.to_df()
       ```
     On execution, we get: 
-    ![Positive Reviews and Sales Performance](images/use-cases/use-case-3/result-3.png)
+    ![Positive Reviews and Sales Performance](/images/use-cases/use-case-3/result-3.png)
       - This query analyzes the relationship between positive reviews and sales performance for each product. It categorizes the sales performance based on the average sales.
 
 ### Conclusion
