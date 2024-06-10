@@ -3,53 +3,182 @@ title: 'Image Retrieval'
 description: 'Image Metadata Retrieval with ThanoSQL'
 ---
 
-### Introduction
+## Introduction
 Managing and retrieving large image datasets is a common challenge for photographers, art galleries, and companies involved in poster production or exhibitions. This use case will guide you through the process of using ThanoSQL to handle and query large datasets of images and their metadata. By the end of this use case, you will be able to search for images based on both image and text inputs and retrieve detailed metadata about the images, such as dimensions and photographer information.
 
-### Dataset
+## Dataset
 We will be working with two datasets:
-- **Unsplash Metadata Sample Table (unsplash_meta_sample)**: Contains detailed metadata about the images including information about the photographer, camera settings, and location.
-  - `photo_id`: Unique identifier for each photo.
-  - `photo_url`: URL of the photo on Unsplash.
-  - `photo_image_url`: URL of the photo image.
-  - `photo_submitted_at`: Date when the photo was submitted.
-  - `photo_featured`: Indicates if the photo is featured.
-  - `photo_width`: Width of the photo in pixels.
-  - `photo_height`: Height of the photo in pixels.
-  - `photo_aspect_ratio`: Aspect ratio of the photo.
-  - `photo_description`: Description of the photo.
-  - `photographer_username`: Username of the photographer.
-  - `photographer_first_name`: First name of the photographer.
-  - `photographer_last_name`: Last name of the photographer.
-  - `exif_camera_make`: Camera make.
-  - `exif_camera_model`: Camera model.
-  - `exif_iso`: ISO setting of the camera.
-  - `exif_aperture_value`: Aperture value.
-  - `exif_focal_length`: Focal length.
-  - `exif_exposure_time`: Exposure time.
-  - `photo_location_name`: Name of the photo location.
-  - `photo_location_latitude`: Latitude of the photo location.
-  - `photo_location_longitude`: Longitude of the photo location.
-  - `photo_location_country`: Country of the photo location.
-  - `photo_location_city`: City of the photo location.
-  - `stats_views`: Number of views.
-  - `stats_downloads`: Number of downloads.
-  - `ai_description`: AI-generated description of the photo.
-  - `ai_primary_landmark_name`: AI-generated primary landmark name.
-  - `ai_primary_landmark_latitude`: Latitude of the AI-generated primary landmark.
-  - `ai_primary_landmark_longitude`: Longitude of the AI-generated primary landmark.
-  - `ai_primary_landmark_confidence`: Confidence of the AI-generated primary landmark.
-  - `blur_hash`: Blur hash of the image.
-- **Unsplash Embedding Sample Table (unsplash_embed_sample)**: Contains image paths and their corresponding embeddings.
-  - `photo_id`: Unique identifier for each photo.
-  - `image_path`: Path to the image.
-  - `embedding`: Embedding vector of the image.
 
-### Goals
+<AccordionGroup>
+  <Accordion title="Unsplash Embedding Sample Table (unsplash_embed_sample)">
+    <p>Contains detailed metadata about the images including information about the photographer, camera settings, and location.</p>
+    <table>
+    <thead>
+        <tr>
+        <th>Field</th>
+        <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td><code>photo_id</code></td>
+        <td>Unique identifier for each photo.</td>
+        </tr>
+        <tr>
+        <td><code>photo_url</code></td>
+        <td>URL of the photo on Unsplash.</td>
+        </tr>
+        <tr>
+        <td><code>photo_image_url</code></td>
+        <td>URL of the photo image.</td>
+        </tr>
+        <tr>
+        <td><code>photo_submitted_at</code></td>
+        <td>Date when the photo was submitted.</td>
+        </tr>
+        <tr>
+        <td><code>photo_featured</code></td>
+        <td>Indicates if the photo is featured.</td>
+        </tr>
+        <tr>
+        <td><code>photo_width</code></td>
+        <td>Width of the photo in pixels.</td>
+        </tr>
+        <tr>
+        <td><code>photo_height</code></td>
+        <td>Height of the photo in pixels.</td>
+        </tr>
+        <tr>
+        <td><code>photo_aspect_ratio</code></td>
+        <td>Aspect ratio of the photo.</td>
+        </tr>
+        <tr>
+        <td><code>photo_description</code></td>
+        <td>Description of the photo.</td>
+        </tr>
+        <tr>
+        <td><code>photographer_username</code></td>
+        <td>Username of the photographer.</td>
+        </tr>
+        <tr>
+        <td><code>photographer_first_name</code></td>
+        <td>First name of the photographer.</td>
+        </tr>
+        <tr>
+        <td><code>photographer_last_name</code></td>
+        <td>Last name of the photographer.</td>
+        </tr>
+        <tr>
+        <td><code>exif_camera_make</code></td>
+        <td>Camera make.</td>
+        </tr>
+        <tr>
+        <td><code>exif_camera_model</code></td>
+        <td>Camera model.</td>
+        </tr>
+        <tr>
+        <td><code>exif_iso</code></td>
+        <td>ISO setting of the camera.</td>
+        </tr>
+        <tr>
+        <td><code>exif_aperture_value</code></td>
+        <td>Aperture value.</td>
+        </tr>
+        <tr>
+        <td><code>exif_focal_length</code></td>
+        <td>Focal length.</td>
+        </tr>
+        <tr>
+        <td><code>exif_exposure_time</code></td>
+        <td>Exposure time.</td>
+        </tr>
+        <tr>
+        <td><code>photo_location_name</code></td>
+        <td>Name of the photo location.</td>
+        </tr>
+        <tr>
+        <td><code>photo_location_latitude</code></td>
+        <td>Latitude of the photo location.</td>
+        </tr>
+        <tr>
+        <td><code>photo_location_longitude</code></td>
+        <td>Longitude of the photo location.</td>
+        </tr>
+        <tr>
+        <td><code>photo_location_country</code></td>
+        <td>Country of the photo location.</td>
+        </tr>
+        <tr>
+        <td><code>photo_location_city</code></td>
+        <td>City of the photo location.</td>
+        </tr>
+        <tr>
+        <td><code>stats_views</code></td>
+        <td>Number of views.</td>
+        </tr>
+        <tr>
+        <td><code>stats_downloads</code></td>
+        <td>Number of downloads.</td>
+        </tr>
+        <tr>
+        <td><code>ai_description</code></td>
+        <td>AI-generated description of the photo.</td>
+        </tr>
+        <tr>
+        <td><code>ai_primary_landmark_name</code></td>
+        <td>AI-generated primary landmark name.</td>
+        </tr>
+        <tr>
+        <td><code>ai_primary_landmark_latitude</code></td>
+        <td>Latitude of the AI-generated primary landmark.</td>
+        </tr>
+        <tr>
+        <td><code>ai_primary_landmark_longitude</code></td>
+        <td>Longitude of the AI-generated primary landmark.</td>
+        </tr>
+        <tr>
+        <td><code>ai_primary_landmark_confidence</code></td>
+        <td>Confidence of the AI-generated primary landmark.</td>
+        </tr>
+        <tr>
+        <td><code>blur_hash</code></td>
+        <td>Blur hash of the image.</td>
+        </tr>
+    </tbody>
+    </table>
+  </Accordion>
+  <Accordion title="Unsplash Metadata Sample Table (unsplash_meta_sample)">
+    <p>Contains image paths and their corresponding embeddings.</p>
+    <table>
+    <thead>
+        <tr>
+        <th>Field</th>
+        <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+        <td><code>photo_id</code></td>
+        <td>Unique identifier for each photo.</td>
+        </tr>
+        <tr>
+        <td><code>image_path</code></td>
+        <td>Path to the image.</td>
+        </tr>
+        <tr>
+        <td><code>embedding</code></td>
+        <td>Embedding vector of the image.</td>
+        </tr>
+    </tbody>
+    </table>
+  </Accordion>
+</AccordionGroup>
+
+## Goals
 1. Obtain photo files and their metadata (e.g., photo dimensions, photographer names).
 2. Perform advanced queries on both structured and unstructured data using ThanoSQL to retrieve the desired metadata.
 
-### Procedure
+## Procedure
 0. **Download Datasets**:
     - First, we will load the datasets into pandas DataFrames and display their shapes to understand the structure and size of the data.
     ```python
@@ -331,5 +460,5 @@ We will be working with two datasets:
     ![Image Display 2](/images/use-cases/use-case-2/image-display-2.png)
     - This code fetches and displays the image using its URL from the metadata.
 
-### Conclusion
+## Conclusion
 By following these steps, you will be able to efficiently manage and retrieve image metadata from large datasets using ThanoSQL. This capability is invaluable for various applications, including art exhibitions, poster production, and digital asset management. The ability to perform both image-based and text-based searches enables a flexible and powerful approach to handling visual data.

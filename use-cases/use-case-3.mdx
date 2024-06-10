@@ -3,10 +3,10 @@ title: 'Review Analytics'
 description: 'Review Analysis and Sales Data Integration'
 ---
 
-### Introduction
+## Introduction
 Understanding customer sentiment through product reviews is crucial for businesses aiming to enhance their product offerings and customer satisfaction. This use case will guide you through the process of analyzing product reviews, classifying them into various emotional categories using natural language processing (NLP), and linking these reviews with sales data. By the end of this use case, you will be able to uncover insights about how different emotional categories of reviews correlate with product sales, helping you make data-driven decisions to improve your products and marketing strategies.
 
-### Dataset
+## Dataset
 We will be working with the following datasets:
 - **Review Comments Table (review_comments)**: Contains textual reviews of products.
   - `ProductId`: Unique identifier for each product.
@@ -21,12 +21,12 @@ We will be working with the following datasets:
   - `ProductId`: Unique identifier for each product.
   - `Score`: Sales score for the product.
 
-### Goals
+## Goals
 1. Classify product reviews into emotional categories.
 2. Link classified reviews with corresponding sales data.
 3. Generate actionable insights based on the analysis of linked data.
 
-### Procedure
+## Procedure
 1. **Import ThanoSQL Library**:
     - Import the ThanoSQL library and create a client instance. This client will be used to interact with the ThanoSQL engine.
     ```python
@@ -196,5 +196,5 @@ We will be working with the following datasets:
     ![Positive Reviews and Sales Performance](/images/use-cases/use-case-3/result-3.png)
       - This query analyzes the relationship between positive reviews and sales performance for each product. It categorizes the sales performance based on the average sales.
 
-### Conclusion
+## Conclusion
 This use case has guided you through the process of using ThanoSQL to analyze product reviews and their impact on sales performance. By classifying reviews into emotional categories and linking them with sales data, you can uncover valuable insights that help in understanding customer sentiment and its correlation with product success. This analysis can inform your marketing strategies, product development, and customer service approaches, ultimately contributing to improved customer satisfaction and business growth.
