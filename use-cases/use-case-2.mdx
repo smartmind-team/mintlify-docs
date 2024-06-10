@@ -1,0 +1,335 @@
+---
+title: 'Image Retrieval'
+description: 'Image Metadata Retrieval with ThanoSQL'
+---
+
+### Introduction
+Managing and retrieving large image datasets is a common challenge for photographers, art galleries, and companies involved in poster production or exhibitions. This use case will guide you through the process of using ThanoSQL to handle and query large datasets of images and their metadata. By the end of this use case, you will be able to search for images based on both image and text inputs and retrieve detailed metadata about the images, such as dimensions and photographer information.
+
+### Dataset
+We will be working with two datasets:
+- **Unsplash Metadata Sample Table (unsplash_meta_sample)**: Contains detailed metadata about the images including information about the photographer, camera settings, and location.
+  - `photo_id`: Unique identifier for each photo.
+  - `photo_url`: URL of the photo on Unsplash.
+  - `photo_image_url`: URL of the photo image.
+  - `photo_submitted_at`: Date when the photo was submitted.
+  - `photo_featured`: Indicates if the photo is featured.
+  - `photo_width`: Width of the photo in pixels.
+  - `photo_height`: Height of the photo in pixels.
+  - `photo_aspect_ratio`: Aspect ratio of the photo.
+  - `photo_description`: Description of the photo.
+  - `photographer_username`: Username of the photographer.
+  - `photographer_first_name`: First name of the photographer.
+  - `photographer_last_name`: Last name of the photographer.
+  - `exif_camera_make`: Camera make.
+  - `exif_camera_model`: Camera model.
+  - `exif_iso`: ISO setting of the camera.
+  - `exif_aperture_value`: Aperture value.
+  - `exif_focal_length`: Focal length.
+  - `exif_exposure_time`: Exposure time.
+  - `photo_location_name`: Name of the photo location.
+  - `photo_location_latitude`: Latitude of the photo location.
+  - `photo_location_longitude`: Longitude of the photo location.
+  - `photo_location_country`: Country of the photo location.
+  - `photo_location_city`: City of the photo location.
+  - `stats_views`: Number of views.
+  - `stats_downloads`: Number of downloads.
+  - `ai_description`: AI-generated description of the photo.
+  - `ai_primary_landmark_name`: AI-generated primary landmark name.
+  - `ai_primary_landmark_latitude`: Latitude of the AI-generated primary landmark.
+  - `ai_primary_landmark_longitude`: Longitude of the AI-generated primary landmark.
+  - `ai_primary_landmark_confidence`: Confidence of the AI-generated primary landmark.
+  - `blur_hash`: Blur hash of the image.
+- **Unsplash Embedding Sample Table (unsplash_embed_sample)**: Contains image paths and their corresponding embeddings.
+  - `photo_id`: Unique identifier for each photo.
+  - `image_path`: Path to the image.
+  - `embedding`: Embedding vector of the image.
+
+### Goals
+1. Obtain photo files and their metadata (e.g., photo dimensions, photographer names).
+2. Perform advanced queries on both structured and unstructured data using ThanoSQL to retrieve the desired metadata.
+
+### Procedure
+0. **Download Datasets**:
+    - First, we will load the datasets into pandas DataFrames and display their shapes to understand the structure and size of the data.
+    ```python
+    import pandas as pd
+    unsplash_meta = pd.read_csv("unsplash_meta.csv")
+    unsplash_embed = pd.read_csv("unsplash_embed.csv")
+    unsplash_embed_sample = pd.read_csv("unsplash_embed_sample.csv")
+    unsplash_meta_sample = pd.read_csv("unsplash_meta_sample.csv")   
+
+    print("unsplash_meta:", unsplash_meta.shape, "unsplash_embed:", unsplash_embed.shape)
+    print("unsplash_meta_sample:", unsplash_meta_sample.shape, "unsplash_embed_sample:", unsplash_embed_sample.shape)
+    ```
+    On execution, we get: 
+    ![Load Data](/images/use-cases/use-case-2/load-data.png)
+    - This step loads the datasets into pandas DataFrames and prints their shapes to give an overview of the data size and structure.
+
+1. **Import ThanoSQL Library**:
+    - Next, we need to import the ThanoSQL library and create a client instance. This client will be used to interact with the ThanoSQL engine.
+    ```python
+    from thanosql import ThanoSQL
+    client = ThanoSQL(api_token="your_api_token", engine_url="engine_url")
+    ```
+
+2. **Upload Data to Tables**:
+    - We upload the `unsplash_embed_sample` table to ThanoSQL. This table contains image paths and their corresponding embeddings.
+    ```python
+    table = client.table.upload('unsplash_embed_sample', 'unsplash_embed_sample.csv', if_exists='replace')
+    table.get_records(limit=10).to_df()
+    ```
+    On execution, we get: 
+    ![Table 1](/images/use-cases/use-case-2/table-1.png)
+    - This step uploads the `unsplash_embed_sample` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
+
+    - Similarly, we upload the `unsplash_meta_sample` table which contains detailed metadata about the images.
+    ```python 
+    table = client.table.upload('unsplash_meta_sample', 'unsplash_meta_sample.csv', if_exists='replace')
+    table.get_records(limit=10).to_df()
+    ```
+    On execution, we get: 
+    ![Table 2](/images/use-cases/use-case-2/table-2.png)
+    - This step uploads the `unsplash_meta_sample` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
+
+3. **Create Embedding Column**:
+    - To store the embedding vectors, we need to create an embedding column in the `unsplash_embed_sample` table.
+    ```python
+    query_result = client.query.execute(
+        """
+        CREATE EXTENSION IF NOT EXISTS vector;
+
+        ALTER TABLE unsplash_embed_sample
+        ADD COLUMN IF NOT EXISTS embedding vector(512)
+        """
+    )
+    query_result.state
+    ```
+    On execution, we get: 
+    ![Complete](/images/use-cases/use-case-2/complete.png)
+    - This step ensures that the `vector` extension is available and adds an embedding column to the `unsplash_embed_sample` table if it does not already exist.
+
+4. **Embed Images**:
+    - Now, we calculate and update the embedding vectors for the images in the `unsplash_embed_sample` table using a pre-trained model.
+    ```python
+    query_result = client.query.execute(
+        """
+        WITH calculated_embeddings 
+        AS (
+        SELECT
+            image_path,
+            thanosql.embed(
+                engine := 'huggingface',
+                input := image_path,
+                model := 'openai/clip-vit-base-patch32'
+            ) AS embedding
+        FROM
+            unsplash_embed_sample
+        )
+        UPDATE 
+            unsplash_embed_sample
+        SET 
+            embedding = calculated_embeddings.embedding
+        FROM 
+            calculated_embeddings
+        WHERE
+        unsplash_embed_sample.image_path = calculated_embeddings.image_path
+        """
+    )
+    query_result.state
+    ```
+    On execution, we get: 
+    ![Complete](/images/use-cases/use-case-2/complete.png)
+    - This step uses the `openai/clip-vit-base-patch32` model to calculate embeddings for each image and updates the `unsplash_embed_sample` table with these embeddings.
+
+5. **Search by Image**:
+    - We can perform a similarity search using an example image. Here, we retrieve the embedding vector for an image of a coastal cliff.
+    ```python
+    query_result = client.query.execute(
+        """
+        SELECT 
+            thanosql.embed(
+                engine := 'huggingface',
+                input := '/home/jovyan/use_case_2_search/coastal_cliff.jpg',
+                model := 'openai/clip-vit-base-patch32'
+            ) AS embedding 
+        """
+    )
+    query_result.records.to_df()
+    ```
+    On execution, we get: 
+    ![Result 1](/images/use-cases/use-case-2/result-1.png)
+    - This query generates an embedding for the specified image and retrieves it.
+
+    - We then use this embedding to find the most similar images in the `unsplash_embed_sample` table.
+    ```python
+    query_result = client.query.execute(
+        """
+        SELECT photo_id, embedding
+        FROM unsplash_embed_sample
+        ORDER BY embedding <-> (
+            SELECT thanosql.embed(
+                engine := 'huggingface',
+                input := '/home/jovyan/use_case_2_search/coastal_cliff.jpg',
+                model := 'openai/clip-vit-base-patch32'
+                ) 
+                AS embedding
+            )
+        LIMIT 3
+        """
+    )
+    query_result.records.to_df()
+    ```
+    On execution, we get: 
+    ![Result 2](/images/use-cases/use-case-2/result-2.png)
+    - This query retrieves the three most similar images to the example image based on their embeddings.
+
+6. **Query Metadata for Retrieved Images**:
+    - Next, we retrieve detailed metadata for the images found in the previous step.
+    ```python
+    query_result = client.query.execute(
+        """
+        SELECT photo_id,
+               photo_image_url, 
+               photo_submitted_at, 
+               photo_width, 
+               photo_height, 
+               photographer_username, 
+               photographer_first_name, 
+               photographer_last_name, 
+               exif_camera_make, 
+               exif_camera_model, 
+               exif_iso, 
+               exif_aperture_value, 
+               exif_focal_length, 
+               exif_exposure_time
+        FROM unsplash_meta_sample
+        WHERE photo_id 
+        IN (
+            SELECT photo_id
+            FROM unsplash_embed_sample
+            ORDER BY embedding <-> (
+            SELECT 
+            thanosql.embed(
+                engine := 'huggingface',
+                input := '/home/jovyan/use_case_2_search/coastal_cliff.jpg',
+                model := 'openai/clip-vit-base-patch32'
+                )
+            )
+            LIMIT 2
+        )
+        """
+    )
+    df = query_result.records.to_df()
+    df
+    ```
+    On execution, we get: 
+    ![Result 3](/images/use-cases/use-case-2/result-3.png)
+    - This query retrieves metadata such as the image URL, submission date, dimensions, and photographer information for the images found in the previous step.
+
+7. **Display Retrieved Images**:
+    - We can now display the retrieved images using the metadata.
+    ```python
+    import requests
+    from PIL import Image
+    from io import BytesIO
+    import matplotlib.pyplot as plt
+
+    def show_images(df, image_column_name):
+        num_images = len(df)
+        fig, axes = plt.subplots(1, num_images, figsize=(15, 5))
+        
+        if num_images == 1:
+            axes = [axes]
+        
+        for idx, (image_url, ax) in enumerate(zip(df[image_column_name], axes)):
+            response = requests.get(image_url)
+            response.raise_for_status()
+            image = Image.open(BytesIO(response.content))
+            ax.imshow(image)
+            ax.axis('off')
+
+        plt.tight_layout()
+        plt.show()
+
+    show_images(df, 'photo_image_url')
+    ```
+    On execution, we get: 
+    ![Image Display 1](/images/use-cases/use-case-2/image-display-1.png)
+    - This code fetches and displays the images using their paths from the metadata.
+
+8. **Search by Text**:
+    - We can also perform a similarity search using a text description. Here, we search for the image that is most similar to the description "a photo of a coastal cliff".
+    ```python
+    query_result = client.query.execute(
+        """
+        SELECT photo_id
+        FROM unsplash_embed_sample
+        ORDER BY embedding <-> (
+        SELECT 
+        thanosql.embed(
+            engine := 'huggingface',
+            input := 'a photo of a coastal cliff',
+            model := 'openai/clip-vit-base-patch32'
+            )
+        )
+        LIMIT 1
+        """
+    )
+    query_result.records.to_df()
+    ```
+    On execution, we get: 
+    ![Result 4](/images/use-cases/use-case-2/result-4.png)
+    - This query generates an embedding for the text description and retrieves the most similar image based on its embedding.
+
+    - We then retrieve the meta information for the retrieved image.
+    ```python
+    query_result = client.query.execute(
+        """
+        SELECT photo_id,
+            photo_image_url, 
+            photo_submitted_at, 
+            photo_width, 
+            photo_height, 
+            photographer_username, 
+            photographer_first_name, 
+            photographer_last_name, 
+            exif_camera_make, 
+            exif_camera_model, 
+            exif_iso, 
+            exif_aperture_value, 
+            exif_focal_length, 
+            exif_exposure_time
+        FROM unsplash_meta_sample
+        WHERE photo_id 
+        IN (
+            SELECT photo_id
+            FROM unsplash_embed_sample
+            ORDER BY embedding <-> (
+            SELECT 
+            thanosql.embed(
+                engine := 'huggingface',
+                input := 'a photo of a coastal cliff',
+                model := 'openai/clip-vit-base-patch32'
+                )
+            )
+        )
+        """
+    )
+    df = query_result.records.to_df()
+    df
+    ```
+    On execution, we get: 
+    ![Result 5](/images/use-cases/use-case-2/result-5.png)
+    - This query retrieves metadata for the image that matches the text description.
+
+    - Finally, we display the retrieved image.
+    ```python
+    show_images(df, 'photo_image_url')
+    ```
+    On execution, we get: 
+    ![Image Display 2](/images/use-cases/use-case-2/image-display-2.png)
+    - This code fetches and displays the image using its URL from the metadata.
+
+### Conclusion
+By following these steps, you will be able to efficiently manage and retrieve image metadata from large datasets using ThanoSQL. This capability is invaluable for various applications, including art exhibitions, poster production, and digital asset management. The ability to perform both image-based and text-based searches enables a flexible and powerful approach to handling visual data.

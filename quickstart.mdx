@@ -12,7 +12,7 @@ Welcome to ThanoSQL! This guide will help you get started with the basics of usi
 ### Prerequisites
 
 Before you begin, ensure you have the following:
-- Basic understanding of SQL.
+- A basic understanding of SQL.
 - Access to the [ThanoSQL Console](https://console.thanosql.com/).
 
 ### Step 1: Setting Up Your Environment
@@ -20,94 +20,129 @@ Before you begin, ensure you have the following:
 1. **Sign In:** Log in to your ThanoSQL account.
 2. **Create a New Workspace:** Navigate to the dashboard and create a new workspace to manage your queries and data. For more information about creating a workspace, check out the [workspace page](/workspace/overview).
 
-### Step 2: Uploading Data
+### Step 2: Download the Data
 
-There are two ways to upload data into ThanoSQL:
+First, download the dataset, which contains user reviews of a product, running the following command in your terminal, or by visiting the dataset link [here](https://github.com/smartmind-team/assets/blob/main/datasets/comments_data.csv) and downloading the file manually.
 
-1. **Using File Manager:**
-   - Go to the 'File Manager' and upload your datasets. ThanoSQL supports various file formats such as CSV, JSON, and more.
-  
-2. **Using the Lab:**
-   - In the 'Lab' section, upload your data using the table upload functionality:
-    ```python
-    table = client.table.upload('unsplash_embed', 'unsplash_embed.csv', if_exists='replace')
-    table.get_records(limit=10).to_df()
-    ```
+```bash
+!wget https://raw.githubusercontent.com/smartmind-team/assets/main/datasets/comments_data.csv
+```
 
-### Step 3: Writing Your First Query
+The dataset is a CSV file named `comments_data.csv` and contains the following columns:
 
-1. **Basic Query:** Retrieve all records from a specified table.
+- **ProductId:** The unique identifier for the product.
+- **UserId:** The unique identifier for the user who submitted the review.
+- **Text:** The content of the user's review.
+
+Here's a sample of what the dataset looks like:
+
+| ProductId | UserId | Text |
+|-----------|--------|------|
+| B005K4Q1VI | A1BJHZE41QWBX6 | I received the K-cups on time and in excellent condition. I usually drink coffee, but at night the Hot cocoa is good with a snack, just before bed. |
+| B005K4Q1VI | A365A90ZY1Q80T | This is the best hot cocoa I've had in a K-Cup! The taste is smooth and creamy. It's perfect for a cold morning or an evening hot drink. I would definitely recommend this product. The best part is that it can be ordered on auto delivery so I never run out. |
+
+
+### Step 3: Uploading Data
+
+To upload your dataset to ThanoSQL, follow these steps. ThanoSQL supports various file formats, including `CSV` and `JSON`.
+
+<Steps>
+    <Step title="Access Query Manager and Initiate Table Creation">
+        Navigate to the `Query Manager` section in the ThanoSQL console and click on the `Create Table` button to start the process.
+        ![](/images/quickstart/qm-1.png)
+    </Step>
+    <Step title="Choose the File Upload Option">
+        Select the `Upload Local File` option. You can also choose `Create New Table Manually` for other use cases, but for this guide, we will use `Upload Local File`.
+        ![](/images/quickstart/qm-2.png)
+    </Step>
+    <Step title="Set Up Your Table Configuration">
+        For this quick guide, leave the default settings as they are. Simply enter the table name: `review_comments_data`.
+        ![](/images/quickstart/qm-3.png)
+    </Step>
+    <Step title="Upload and Verify Your Data">
+        After the upload is complete, navigate to the `Table` tab to verify that your table has been created successfully.
+        ![](/images/quickstart/qm-4.png)
+    </Step>
+    <Step title="Inspect the Table Schema">
+        Click on the table name to view the `Table Schema`, which provides details about the structure of your data.
+        ![](/images/quickstart/qm-5.png)
+        <Tip>
+            You can click on the image to enlarge it for a better view.
+        </Tip>
+    </Step>
+    <Step title="Preview the Uploaded Data">
+        Click the `Preview` button to inspect the data and ensure everything has been uploaded correctly.
+        ![](/images/quickstart/qm-6.png)
+    </Step>
+</Steps>
+
+
+### Step 4: Writing Your First Query
+
+To get started with querying your data in ThanoSQL, let's write a simple SQL query to retrieve all records from your table.
+
+1. **Basic Query:** Retrieve all records from the `review_comments_data` table.
     ```sql
-    SELECT * FROM your_table_name;
+    SELECT * FROM review_comments_data;
     ```
-    On execution, we get:
+    On execution, you will see all the records in the table:
     ```
-    id | column1 | column2
-    ---|---------|---------
-    1  | value1  | value2
-    2  | value3  | value4
-    ```
-
-2. **Using AI Models:** Generate AI-driven insights by specifying an AI model and relevant column.
-    ```sql
-    SELECT thanosql.generate('model_name', 'column_name') FROM your_table_name;
-    ```
-    Replace `model_name` with the specific AI model you want to use and `column_name` with the relevant column in your dataset.
-    On execution, we get:
-    ```
-    id | generated_output
-    ---|-----------------
-    1  | output1
-    2  | output2
+    | ProductId     | UserId        | Text                                                                                                       |
+    |---------------|---------------|------------------------------------------------------------------------------------------------------------|
+    | B005K4Q1VI    | A1BJHZE41QWBX6| I received the K-cups on time and in excellent condition. I usually drink coffee, but at night the Hot cocoa is good with a snack, just before bed. |
+    | B005K4Q1VI    | A365A90ZY1Q80T| This is the best hot cocoa I've had in a K-Cup! The taste is smooth and creamy. It's perfect for a cold morning or an evening hot drink. I would definitely recommend this product. The best part is that it can be ordered on auto delivery so I never run out. |
+    ...
     ```
 
-### Step 4: Utilizing Pre-Built AI Models
+### Step 5: Utilizing Pre-Built AI Models
 
 <Tip>
-To maximize the effectiveness of the pre-built AI models, ensure you familiarize yourself with the ThanoSQL functions before use:
+ThanoSQL offers powerful pre-built AI models that you can easily integrate into your queries. To make the most of these models, ensure you understand the core ThanoSQL functions:
 
 - [Generate](/functions/generate)
 - [Embed](/functions/embed)
 - [Predict](/functions/predict)
 
-A thorough understanding of these functions will enable you to leverage the full capabilities of ThanoSQL.
+A solid understanding of these functions will help you fully leverage ThanoSQL's AI capabilities. Familiarize yourself with the ThanoSQL functions mentioned above to maximize the effectiveness of the pre-built AI models.
 </Tip>
 
-
-1. **Text Generation:** Generate text based on a given prompt.
+1. **Sentiment Analysis:** Use a pre-built AI model to predict the sentiment of user reviews.
     ```sql
-    SELECT thanosql.generate('model_name', 'Your prompt here') FROM DUAL;
-    ```
-    On execution, we get:
-    ```
-    generated_text
-    ---------------------------
-    Generated text based on prompt
-    ```
-
-2. **Embedding Generation:** Create embeddings for a specific column.
-    ```sql
-    SELECT thanosql.embed('model_name', 'column_name') FROM your_table_name;
-    ```
-    On execution, we get:
-    ```
-    TextID | text_embedding
-    -------|---------------
-    1      | [0.0034567890, -0.008123456, ... , -0.001987654]
-    2      | [0.0045678901, -0.010987654, ... , -0.002345678]
+    SELECT 
+        thanosql.predict(
+            input := 'Text',
+            model := 'bhadresh-savani/distilbert-base-uncased-emotion',
+            token := 'your_token'
+        ) AS predicted_sentiment
+    FROM review_comments_data;
     ```
 
-### Step 5: Managing Queries and Results
+    On execution, you will get the predicted sentiment for each review:
+    ```
+    | predicted_sentiment                               |
+    |---------------------------------------------------|
+    | {"label": "anger", "score": 0.47565987706184387}  |
+    | {"label": "anger", "score": 0.47565987706184387}  |
+    | {"label": "anger", "score": 0.47565987706184387}  |
+    | {"label": "anger", "score": 0.47565987706184387}  |
+    | {"label": "anger", "score": 0.47565987706184387}  |
+    ...
+    ```
 
-1. **Save Queries as Template:** Save frequently used queries as template for easy access.
-2. **View Results:** Check query results in the Query Manager and use the visualization tools to gain insights from your data.
-
-### More Resources 
-
-For detailed information on how to use ThanoSQL, refer to the [ThanoSQL SDK documentation](/sdk/python).
-
+By following these steps, you can start exploring and analyzing your data using ThanoSQL's integrated AI functionalities.
 
 
 ### Conclusion
 
-Congratulations! You’ve now completed the Quick Start Guide for ThanoSQL. You are ready to harness the power of AI directly within your SQL queries. Explore more advanced features and integrate sophisticated AI models to elevate your data operations.
+Congratulations! You’ve now completed the Quick Start Guide for ThanoSQL. You are ready to harness the power of AI directly within your SQL queries. Dive deeper into advanced features and integrate sophisticated AI models to elevate your data operations. Happy querying!
+
+
+### More Resources 
+
+<Card title="Workspace Management and Optimization" icon="folder-open" iconType="duotone" href="/workspace/overview">
+  Get a thorough understanding of how to manage and optimize your ThanoSQL workspace, including tips for efficient data organization and query management.
+</Card>
+
+<Card title="Use Cases Overview" icon="lightbulb" iconType="duotone" href="/use-cases/overview">
+  Explore a variety of real-world applications and examples of ThanoSQL in action. Learn how to apply ThanoSQL to different scenarios to unlock powerful insights and efficiencies.
+</Card>

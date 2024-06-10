@@ -1,0 +1,200 @@
+---
+title: 'Review Analytics'
+description: 'Review Analysis and Sales Data Integration'
+---
+
+### Introduction
+Understanding customer sentiment through product reviews is crucial for businesses aiming to enhance their product offerings and customer satisfaction. This use case will guide you through the process of analyzing product reviews, classifying them into various emotional categories using natural language processing (NLP), and linking these reviews with sales data. By the end of this use case, you will be able to uncover insights about how different emotional categories of reviews correlate with product sales, helping you make data-driven decisions to improve your products and marketing strategies.
+
+### Dataset
+We will be working with the following datasets:
+- **Review Comments Table (review_comments)**: Contains textual reviews of products.
+  - `ProductId`: Unique identifier for each product.
+  - `UserId`: Unique identifier for each user.
+  - `Text`: Text of the product review.
+- **Review Comments Sentiment Table (review_comments_sentiment)**: Contains product reviews along with their sentiment classification.
+  - `ProductId`: Unique identifier for each product.
+  - `UserId`: Unique identifier for each user.
+  - `Text`: Text of the product review.
+  - `Sentiment`: Sentiment classification of the review.
+- **Sales Data Table (review_sales)**: Contains sales data for each product.
+  - `ProductId`: Unique identifier for each product.
+  - `Score`: Sales score for the product.
+
+### Goals
+1. Classify product reviews into emotional categories.
+2. Link classified reviews with corresponding sales data.
+3. Generate actionable insights based on the analysis of linked data.
+
+### Procedure
+1. **Import ThanoSQL Library**:
+    - Import the ThanoSQL library and create a client instance. This client will be used to interact with the ThanoSQL engine.
+    ```python
+    from thanosql import ThanoSQL
+    client = ThanoSQL(api_token="your_api_token", engine_url="engine_url")
+    ```
+
+2. **Upload Data to Tables**:
+    - Upload the `review_sales` table which contains sales data for each product.
+    ```python
+    table = client.table.upload("review_sales", "sales_data.csv", if_exists='replace')
+    table.get_records(limit=10).to_df()
+    ```
+    On execution, we get: 
+    ![Sales Data Table](/images/use-cases/use-case-3/table-1.png)
+    - This step uploads the `review_sales` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
+
+    - Upload the `review_comments` table which contains textual reviews of products.
+    ```python
+    table = client.table.upload("review_comments", "comments_data.csv", if_exists='replace')
+    table.get_records(limit=10).to_df()
+    ```
+    On execution, we get: 
+    ![Review Comments Table](/images/use-cases/use-case-3/table-2.png)
+    - This step uploads the `review_comments` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
+
+    - Upload the `review_comments_sentiment` table which contains product reviews along with their sentiment classification.
+    ```python
+    table = client.table.upload("review_comments_sentiment", "comments_data_sentiment.csv", if_exists='replace')
+    table.get_records(limit=10).to_df()
+    ```
+    On execution, we get: 
+    ![Review Comments Sentiment Table](/images/use-cases/use-case-3/table-3.png)
+    - This step uploads the `review_comments_sentiment` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
+
+3. **Classify Reviews and Aggregate Sales Data**:
+    - Predict sentiment for reviews using a pre-trained model and aggregate the data to link reviews with sales.
+
+    - **Predict Sentiment for Reviews**:
+      ```python
+      query_result = client.query.execute("""
+          SELECT
+              "ProductId",
+              "Text",
+              (jsonb_array_elements_text(
+                  (thanosql.predict(
+                      input := "Text",
+                      model := 'bhadresh-savani/distilbert-base-uncased-emotion',
+                      model_args := '{"top_k": 1}',
+                      token := 'your_token'
+                  )::jsonb)
+              )::jsonb ->> 'label') AS "Sentiment"
+          FROM
+              review_comments
+          LIMIT 10;
+      """)
+      query_result.records.to_df()
+      ```
+    On execution, we get: 
+    ![Predicted Sentiment](/images/use-cases/use-case-3/result-1.png)
+      - This query predicts the sentiment of each review using the `distilbert-base-uncased-emotion` model and retrieves the first 10 predictions to confirm the process.
+
+    - **Link Reviews with Sales Data**:
+      - Group reviews by `ProductId` and `Sentiment` to show the count of each sentiment and the corresponding sales data for each product.
+      ```python
+      query_result = client.query.execute("""
+          SELECT 
+              s."ProductId",
+              SUM(s."Score") AS total_quantity_sold,
+              r."Sentiment",
+              COUNT(r."Sentiment") AS sentiment_count
+          FROM 
+              review_sales s
+          JOIN
+              (
+                  SELECT
+                      "ProductId",
+                      "Text",
+                      (jsonb_array_elements_text(
+                          (thanosql.predict(
+                              input := "Text",
+                              model := 'bhadresh-savani/distilbert-base-uncased-emotion',
+                              model_args := '{"top_k": 1}',
+                              token := 'your_token'
+                          )::jsonb)
+                      )::jsonb ->> 'label') AS "Sentiment"
+                  FROM
+                      review_comments
+                  LIMIT 100
+              ) r
+          ON 
+              s."ProductId" = r."ProductId"
+          GROUP BY 
+              s."ProductId", r."Sentiment"
+          ORDER BY 
+              s."ProductId", sentiment_count DESC;
+      """)
+      query_result.records.to_df()
+      ```
+    On execution, we get: 
+    ![Linked Reviews and Sales Data](/images/use-cases/use-case-3/result-2.png)
+      - This query links the reviews with sales data by grouping them by `ProductId` and `Sentiment`. It calculates the total quantity sold and the count of each sentiment for each product.
+
+    - **Analyze Positive Reviews and Sales Performance**:
+      - Show the relationship between sales and positive reviews (`joy`, `love`, `surprise`, `neutral`) for each product.
+      ```python
+      query_result = client.query.execute("""
+          WITH positive_reviews AS (
+              SELECT 
+                  "ProductId",
+                  COUNT(*) AS positive_count
+              FROM 
+                  (
+                      SELECT
+                          "ProductId",
+                          "Text",
+                          (jsonb_array_elements_text(
+                              (thanosql.predict(
+                                  input := "Text",
+                                  model := 'bhadresh-savani/distilbert-base-uncased-emotion',
+                                  model_args := '{"top_k": 1}',
+                                  token := 'your_token'
+                              )::jsonb)
+                          )::jsonb ->> 'label') AS "Sentiment"
+                      FROM
+                          review_comments
+                      LIMIT 100
+                  )
+              WHERE 
+                  "Sentiment" IN ('joy', 'love', 'surprise', 'neutral')
+              GROUP BY 
+                  "ProductId"
+          ),
+          total_sales AS (
+              SELECT 
+                  "ProductId",
+                  SUM("Score") AS total_quantity_sold
+              FROM 
+                  review_sales
+              GROUP BY 
+                  "ProductId"
+          )
+          SELECT 
+              ts."ProductId",
+              ts.total_quantity_sold,
+              COALESCE(pr.positive_count, 0) AS positive_count,
+              CASE 
+                  WHEN pr.positive_count IS NULL THEN 'No Positive Reviews'
+                  WHEN ts.total_quantity_sold > (
+                      SELECT AVG(total_quantity_sold) 
+                      FROM total_sales
+                  ) THEN 'Above Average Sales'
+                  ELSE 'Below Average Sales'
+              END AS sales_performance
+          FROM 
+              total_sales ts
+          LEFT JOIN 
+              positive_reviews pr
+          ON 
+              ts."ProductId" = pr."ProductId"
+          ORDER BY 
+              ts.total_quantity_sold DESC;
+      """)
+      query_result.records.to_df()
+      ```
+    On execution, we get: 
+    ![Positive Reviews and Sales Performance](/images/use-cases/use-case-3/result-3.png)
+      - This query analyzes the relationship between positive reviews and sales performance for each product. It categorizes the sales performance based on the average sales.
+
+### Conclusion
+This use case has guided you through the process of using ThanoSQL to analyze product reviews and their impact on sales performance. By classifying reviews into emotional categories and linking them with sales data, you can uncover valuable insights that help in understanding customer sentiment and its correlation with product success. This analysis can inform your marketing strategies, product development, and customer service approaches, ultimately contributing to improved customer satisfaction and business growth.

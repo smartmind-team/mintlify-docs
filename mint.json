@@ -27,6 +27,10 @@
   },
   "tabs": [
     {
+      "name": "Use Cases",
+      "url": "use-cases"
+    },
+    {
       "name": "SDK",
       "url": "sdk"
     },
@@ -93,6 +97,15 @@
       "group": "API Documentation",
       "pages": [
         "api-reference/overview"
+      ]
+    },
+    {
+      "group": "Use Cases",
+      "pages": [
+        "use-cases/overview",
+        "use-cases/use-case-1",
+        "use-cases/use-case-2",
+        "use-cases/use-case-3"
       ]
     },
     {

@@ -40,11 +40,15 @@ FROM
 
 ## Example Usage
 
+<Warning>
+The following examples are provided to help you become familiar with the ThanoSQL syntax. To try out these queries in real scenarios, please visit the [Use Cases](/use-cases/overview) section for detailed tutorials and practical applications.
+</Warning>
+
 ### Using Hugging Face Embedding Models (Text)
 Here is an example of how to use the `embed` function using a Hugging Face model:
 
 ```sql
-SELECT "TextID",
+SELECT 
     thanosql.embed(
         input := text_column,
         engine := 'huggingface',
@@ -56,10 +60,10 @@ FROM
 ```
 On execution, we get: 
 ```
-TextID | text_embedding
--------|---------------
-1      | [0.0034567890, -0.008123456, ... , -0.001987654]
-2      | [0.0045678901, -0.010987654, ... , -0.002345678]
+| text_embedding                                   |
+|--------------------------------------------------|
+| [0.0034567890, -0.008123456, ... , -0.001987654] |
+| [0.0045678901, -0.010987654, ... , -0.002345678] |
 ```
 
 <Note>Please note that you would need to create an access token from Hugging Face to use certain models.</Note>
@@ -67,12 +71,12 @@ TextID | text_embedding
 ### Using Hugging Face Embedding Models (Image)
 Here is an example of how to use the `embed` function to generate embeddings for an image using Hugging Face model:
 ```sql
-SELECT photo_id, embedding
+SELECT embedding
 FROM unsplash_embed_sample
 ORDER BY embedding <-> (
     SELECT thanosql.embed(
         engine := 'huggingface',
-        input := '/home/jovyan/tutorial_2_search/coastal_cliff.jpg',
+        input := '/home/jovyan/use_case_search/coastal_cliff.jpg',
         model := 'openai/clip-vit-base-patch32'
         ) 
         AS embedding
@@ -80,11 +84,12 @@ ORDER BY embedding <-> (
 ```
 On execution, we get: 
 ```
-  photo_id  | embedding
-------------|------------------------------------------------------------------
-bygTaBey1Xk | [-0.08091072, -0.07656342, -0.046813846, 0.344484, ...]
-gXSFnk2a9V4 | [-0.0023032427, 0.14910948, -0.12709272, 0.072619, ...]
-sO42hhChB1c | [0.18557435, 0.17372614, 0.08067615, 0.28555152, ...]
+| embedding                                               |
+|---------------------------------------------------------|
+| [-0.08091072, -0.07656342, -0.046813846, 0.344484, ...] |
+| [-0.0023032427, 0.14910948, -0.12709272, 0.072619, ...] |
+| [0.18557435, 0.17372614, 0.08067615, 0.28555152, ...]   |
+
 ```
 
 <Warning>As of right now, only CLIP models are supported for image embedding with the Hugging Face engine.</Warning>
@@ -93,22 +98,22 @@ sO42hhChB1c | [0.18557435, 0.17372614, 0.08067615, 0.28555152, ...]
 Here is an example of how to use the `embed` function using an OpenAI model:
 
 ```sql
-SELECT "TextID",
+SELECT
     thanosql.embed(
-        input := audio_path,
+        input := text_column,
         engine := 'openai',
         model := 'text-embedding-ada-002',
         token := 'openai_api_key',
     ) AS text_embedding
 FROM
-    audio_files
+    documents
 ```
 On execution, we get: 
 ```
-TextID | text_embedding
--------|---------------
-1      | [0.0023064255, -0.009327292, ... , -0.0028842222]
-2      | [0.0034567890, -0.012345678, ... , -0.0012345678]
+| text_embedding                                    |
+|---------------------------------------------------|
+| [0.0023064255, -0.009327292, ... , -0.0028842222] |
+| [0.0034567890, -0.012345678, ... , -0.0012345678] |
 ```
 
 <Note>Please note that you would need to create an API key from OpenAI.</Note>
@@ -120,15 +125,15 @@ SELECT
     thanosql.embed(
         engine := 'huggingface',
         input := 'Once upon a time in a faraway land',
-        model := 'sentence-transformers/all-MiniLM-L6-v2',
+        model := 'openai/clip-vit-base-patch32',
         token := 'huggingface_token'
     ) AS text_embedding
 ```
 On execution, we get: 
 ```
-text_embedding
----------------
-[0.012345, -0.023456, ... , -0.034567]
+| text_embedding                         |
+|----------------------------------------|
+| [0.012345, -0.023456, ... , -0.034567] |
 ```
 
 

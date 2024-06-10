@@ -57,11 +57,15 @@ We are actively adding more tasks to enhance your experience.
   When using text-generating models with the `huggingface` engine, the default `truncation_policy` is 'strict'. This could result in an error if the token count exceeds the model's limit. If this happens, reduce the text length or use `pipeline_args = "{'truncation_policy': True}"`.
 </Tip>
 
+<Warning>
+The following examples are provided to help you become familiar with the ThanoSQL syntax. To try out these queries in real scenarios, please visit the [Use Cases](/use-cases/overview) section for detailed tutorials and practical applications.
+</Warning>
+
 ### Text Classification
 Here is an example of how to use the `predict` function for text classification using a Hugging Face model:
 
 ```sql
-SELECT "TextID",
+SELECT
     thanosql.predict(
         task := 'text-classification',
         engine := 'huggingface',
@@ -74,10 +78,10 @@ FROM
 ```
 On execution, we get: 
 ```
-TextID | prediction
--------|---------------
-1      | {'label': 'NEGATIVE', 'score': 0.998}
-2      | {'label': 'POSITIVE', 'score': 0.987}
+| prediction                            |
+|---------------------------------------|
+| {'label': 'NEGATIVE', 'score': 0.998} |
+| {'label': 'POSITIVE', 'score': 0.987} |
 ```
 
 <Note>Please note that you would need to create an access token from Hugging Face to use certain models.</Note>
@@ -86,7 +90,7 @@ TextID | prediction
 Here is an example of how to use the `predict` function for sentiment analysis using a Hugging Face model:
 
 ```sql
-SELECT "TextID",
+SELECT 
     thanosql.predict(
         task := 'sentiment-analysis',
         engine := 'huggingface',
@@ -99,10 +103,10 @@ FROM
 ```
 On execution, we get: 
 ```
-TextID | prediction
--------|---------------
-1      | 'POSITIVE'
-2      | 'NEGATIVE'
+| prediction |
+|------------|
+| 'POSITIVE' |
+| 'NEGATIVE' |
 ```
 
 
@@ -110,7 +114,7 @@ TextID | prediction
 Here is an example of how to use the `predict` function for image classification using a Hugging Face model:
 
 ```sql
-SELECT "ImageID",
+SELECT 
     thanosql.predict(
         task := 'image-classification',
         engine := 'huggingface',
@@ -123,10 +127,10 @@ FROM
 ```
 On execution, we get: 
 ```
-ImageID | prediction
---------|---------------
-1       | {'label': 'Egyptian cat', 'score': 0.99}
-2       | {'label': 'Pembroke', 'score': 0.98}
+| prediction                               |
+|------------------------------------------|
+| {'label': 'Egyptian cat', 'score': 0.99} |
+| {'label': 'Pembroke', 'score': 0.98}     |
 ```
 
 ## Model Restrictions

@@ -1,0 +1,146 @@
+---
+title: 'AICC Scenario'
+description: 'AICC Scenario - Call Center Data Analysis'
+---
+
+### Introduction
+In today's data-driven world, effective customer service is a critical component of any successful business. Call centers, which handle customer inquiries and issues, generate vast amounts of data. This use case will guide you through analyzing call center data using ThanoSQL, a powerful tool for managing and querying data. We will classify call transcripts into categories using various language models (LLMs), and derive key performance metrics such as average call time, satisfaction score, and resolution rate for each category. This analysis can provide valuable insights into customer interactions, helping to improve service quality and overall customer satisfaction.
+
+### Dataset
+We will be working with the following datasets:
+- **Counseling Staff Information Table (agents)**: Contains details about the call center agents.
+  - `AgentID`: Unique identifier for each agent.
+  - `AgentName`: Name of the agent.
+- **Consultation Call Metadata Table (calls)**: Records metadata for each call.
+  - `CallID`: Unique identifier for each call.
+  - `AgentID`: Identifier linking the call to the agent.
+  - `SatisfactionScore`: Customer satisfaction score for the call.
+  - `CallDuration`: Duration of the call.
+  - `ResolutionRate`: Rate at which the call issue was resolved.
+- **Consultation Call Transcription Table (transcript)**: Contains the text of the conversations.
+  - `CallID`: Identifier linking the call to the transcription.
+  - `Conversation`: Text of the conversation during the call.
+  - `prompt`: Prompt for LLM generation.
+
+### Goals
+1. Classify call transcripts into meaningful categories using LLMs.
+2. Calculate and analyze the average call time, satisfaction score, and resolution rate for each category.
+
+### Procedure
+1. **Import ThanoSQL Library**:
+    - Import the ThanoSQL library and create a client instance. This client will be used to interact with the ThanoSQL engine.
+    ```python
+    from thanosql import ThanoSQL
+    client = ThanoSQL(api_token="your_api_token", engine_url="engine_url")
+    ```
+
+2. **Upload Data to Tables**:
+    - Upload the `agents` table which contains details about the call center agents.
+    ```python
+    table = client.table.upload('agents', 'agents.csv', if_exists='replace')
+    table.get_records(limit=10).to_df()
+    ```
+    On execution, we get: 
+    ![Agents Table](/images/use-cases/use-case-1/table-1.png)
+    - This step uploads the `agents` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
+
+    - Upload the `calls` table which records metadata for each call.
+    ```python
+    table = client.table.upload('calls', 'calls.csv', if_exists='replace')
+    table.get_records(limit=10).to_df()
+    ```
+    On execution, we get: 
+    ![Calls Table](/images/use-cases/use-case-1/table-2.png)
+    - This step uploads the `calls` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
+
+    - Upload the `transcript` table which contains the text of the conversations.
+    ```python
+    table = client.table.upload('transcript', 'transcript.csv', if_exists='replace')
+    table.get_records(limit=10).to_df()
+    ```
+    On execution, we get: 
+    ![Transcript Table](/images/use-cases/use-case-1/table-3.png)
+    - This step uploads the `transcript` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
+
+    **System Prompt:**
+    
+    Use the following system prompt for LLM generation:
+    "You are a classification assistant. Your task is to analyze a conversation between an assistant and a 
+    human and determine the most appropriate category for the conversation into one of the following 
+    predefined categories: Technology, Refund, Shipping, ACCOUNT, CANCELLATION_FEE, CONTACT, DELIVERY, Feedback, 
+    Invoice, Newsletter, Order. You will only respond with the category. Do not include the word 'Category'. 
+    Do not provide explanations or notes. Do not change the line."
+
+3. **Classify Conversations and Aggregate Metrics**:
+    - Classify conversations using the Mistral LLM and calculate performance metrics.
+
+    - **Using Mistral LLM**:
+      ```python
+      query_result = client.query.execute("""
+      SELECT thanosql.cleanup_resources();
+
+      SELECT 
+          c."AgentID", t.category,
+          AVG(c."SatisfactionScore") AS avg_satisfaction_score,
+          AVG(c."CallDuration") AS avg_call_duration,
+          AVG(c."ResolutionRate") AS avg_resolution_rate
+      FROM 
+          (SELECT "CallID",
+              thanosql.generate(
+                  input := prompt,
+                  engine := 'huggingface',
+                  model := 'mistralai/Mistral-7B-Instruct-v0.2',
+                  token := 'your_token',
+                  model_args := '{"max_new_tokens": 7}'
+              ) AS category
+          FROM
+              transcript) AS t
+      JOIN 
+          calls AS c ON t."CallID" = c."CallID"
+      GROUP BY 
+          c."AgentID", t.category
+      ORDER BY
+          c."AgentID"
+      """)
+      query_result.records.to_df()
+      ```
+      On execution, we get: 
+      ![Result 1](/images/use-cases/use-case-1/result-1.png)
+      - This query classifies each call transcript into predefined categories using the Mistral LLM, then calculates and aggregates key performance metrics (average satisfaction score, average call duration, and average resolution rate) for each category and agent.
+
+    - Classify conversations using the OpenAI GPT-4o and calculate performance metrics.
+
+    - **Using OpenAI GPT-4o**:
+      ```python
+      query_result = client.query.execute("""
+      SELECT * FROM thanosql.cleanup_resources();
+
+      SELECT 
+          t.category,
+          AVG(c."SatisfactionScore") AS avg_satisfaction_score,
+          AVG(c."CallDuration") AS avg_call_duration,
+          AVG(c."ResolutionRate") AS avg_resolution_rate
+      FROM 
+          (SELECT "CallID",
+              thanosql.generate(
+                  input := prompt,
+                  engine := 'openai',
+                  model := 'gpt-4o',
+                  token := 'your_openai_api_key',
+                  model_args := '{"temperature": 0}'
+              ) AS category
+          FROM
+              transcript) AS t
+      JOIN 
+          calls AS c ON t."CallID" = c."CallID"
+      GROUP BY 
+          t.category;
+      """)
+      query_result.records.to_df()
+      ```
+      On execution, we get: 
+      ![Result 2](/images/use-cases/use-case-1/result-2.png)
+      - This query classifies each call transcript into predefined categories using the OpenAI GPT-4o model, then calculates and aggregates key performance metrics (average satisfaction score, average call duration, and average resolution rate) for each category.
+
+### Conclusion
+By following these steps, you can effectively analyze call center data, classify call transcripts into meaningful categories using natural language processing, and derive valuable insights into call durations, customer satisfaction, and resolution rates for each category. These insights can help you understand the performance of your call center agents and identify areas for improvement, ultimately leading to enhanced customer satisfaction and operational efficiency.
