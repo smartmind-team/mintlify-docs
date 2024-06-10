@@ -20,7 +20,7 @@ Before you begin, ensure you have the following:
 1. **Sign In:** Log in to your ThanoSQL account.
 2. **Create a New Workspace:** Navigate to the dashboard and create a new workspace to manage your queries and data. For more information about creating a workspace, check out the [workspace page](/workspace/overview).
 
-### Step 2: Download the Data
+### Step 2: Download the Data to Your Local Machine
 
 First, download the dataset, which contains user reviews of a product, running the following command in your terminal, or by visiting the dataset link [here](https://github.com/smartmind-team/assets/blob/main/datasets/comments_data.csv) and downloading the file manually.
 
@@ -79,7 +79,7 @@ To upload your dataset to ThanoSQL, follow these steps. ThanoSQL supports variou
 
 ### Step 4: Writing Your First Query
 
-To get started with querying your data in ThanoSQL, let's write a simple SQL query to retrieve all records from your table.
+To get started with querying your data in ThanoSQL, go back to Query Manager Editor and let's write a simple SQL query to retrieve all records from your table.
 
 1. **Basic Query:** Retrieve all records from the `review_comments_data` table.
     ```sql
@@ -111,8 +111,7 @@ A solid understanding of these functions will help you fully leverage ThanoSQL's
     SELECT 
         thanosql.predict(
             input := 'Text',
-            model := 'bhadresh-savani/distilbert-base-uncased-emotion',
-            token := 'your_token'
+            model := 'bhadresh-savani/distilbert-base-uncased-emotion'
         ) AS predicted_sentiment
     FROM review_comments_data;
     ```
