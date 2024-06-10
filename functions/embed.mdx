@@ -72,7 +72,7 @@ FROM unsplash_embed_sample
 ORDER BY embedding <-> (
     SELECT thanosql.embed(
         engine := 'huggingface',
-        input := '/home/jovyan/tutorial_2_search/coastal_cliff.jpg',
+        input := '/home/jovyan/use_case_search/coastal_cliff.jpg',
         model := 'openai/clip-vit-base-patch32'
         ) 
         AS embedding
