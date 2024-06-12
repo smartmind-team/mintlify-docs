@@ -6,6 +6,18 @@ description: 'Review Analysis and Sales Data Integration'
 ## Introduction
 Understanding customer sentiment through product reviews is crucial for businesses aiming to enhance their product offerings and customer satisfaction. This use case will guide you through the process of analyzing product reviews, classifying them into various emotional categories using natural language processing (NLP), and linking these reviews with sales data. By the end of this use case, you will be able to uncover insights about how different emotional categories of reviews correlate with product sales, helping you make data-driven decisions to improve your products and marketing strategies.
 
+<Info>
+This tutorial can be executed both within ThanoSQL Lab and in a local Python/Jupyter environment. Whether you prefer to work directly within ThanoSQL Lab's integrated environment or set up a local development environment on your machine, the instructions provided will guide you through the necessary steps.
+</Info>
+
+<Note>
+If you want to try running the code from this use case, you can download the complete Jupyter notebook using this link: [Download Jupyter Notebook](https://github.com/smartmind-team/mintlify-docs/blob/main/examples/Review_Analytics.ipynb). Alternatively, you can download it directly to your machine using the `wget` command below:
+
+```sh
+wget https://raw.githubusercontent.com/smartmind-team/mintlify-docs/main/examples/Review_Analytics.ipynb
+```
+</Note>
+
 ## Dataset
 We will be working with the following datasets:
 - **Review Comments Table (review_comments)**: Contains textual reviews of products.
