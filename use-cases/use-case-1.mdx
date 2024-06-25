@@ -20,7 +20,6 @@ wget https://raw.githubusercontent.com/smartmind-team/mintlify-docs/main/example
 
 <Tip>
 To run the models in this tutorial, you will need the following tokens:
-- **ThanoSQL Token**: Required to access all the fine-tuned ThanoSQL models. This token allows you to leverage ThanoSQL's powerful models and querying capabilities.
 - **OpenAI Token**: Required to access all the OpenAI-related tasks when using OpenAI as an engine. This token enables the use of OpenAI's language models for various natural language processing tasks.
 - **Huggingface Token**: Required only to access gated models such as Mistral on the Huggingface platform. Gated models are those that have restricted access due to licensing or usage policies, and a token is necessary to authenticate and use these models. For more information, check this [Huggingface documentation](https://huggingface.co/docs/hub/en/models-gated).
 Make sure to have these tokens ready before proceeding with the tutorial to ensure a smooth and uninterrupted workflow.
@@ -46,14 +45,7 @@ We will be working with the following datasets:
 1. Classify call transcripts into meaningful categories using LLMs.
 2. Calculate and analyze the average call time, satisfaction score, and resolution rate for each category.
 
-## Tokens 
-To run the models in this tutorial, you will need the following tokens:
-- **ThanoSQL Token**: Required to access all the fine-tuned ThanoSQL models. This token allows you to leverage ThanoSQL's powerful models and querying capabilities.
-- **OpenAI Token**: Required to access all the OpenAI-related tasks when using OpenAI as an engine. This token enables the use of OpenAI's language models for various natural language processing tasks.
-- **Huggingface Token**: Required only to access gated models such as Mistral on the Huggingface platform. Gated models are those that have restricted access due to licensing or usage policies, and a token is necessary to authenticate and use these models. For more information, check this [Huggingface documentation](https://huggingface.co/docs/hub/en/models-gated).
-Make sure to have these tokens ready before proceeding with the tutorial to ensure a smooth and uninterrupted workflow.
-
-### Function: check_result
+## Displaying ThanoSQL Query Results in Jupyter Notebooks
 The check_result function is designed to handle and display the results of a database query executed via the ThanoSQL client. It ensures that any errors are reported, and successful query results are displayed in a user-friendly format.
 
 **Note: This function is specifically designed to work in Jupyter notebook environments.**
@@ -69,7 +61,7 @@ def check_query_result(query_result):
             df = query_result.records.to_df()
             display(df)
         else:
-            print(query_result.state)
+            print("Query executed successfully")
 ```
 
 ## Procedure
