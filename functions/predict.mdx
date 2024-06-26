@@ -53,20 +53,13 @@ We are actively adding more tasks to enhance your experience.
 
 ## Example Usage
 
-<Note>
+<Tip>
   When using text-generating models with the `huggingface` engine, the default `truncation_policy` is 'strict'. This could result in an error if the token count exceeds the model's limit. If this happens, reduce the text length or use `pipeline_args = "{'truncation_policy': True}"`.
-</Note>
+</Tip>
 
 <Warning>
 The following examples are provided to help you become familiar with the ThanoSQL syntax. To try out these queries in real scenarios, please visit the [Use Cases](/use-cases/overview) section for detailed tutorials and practical applications.
 </Warning>
-
-<Tip>
-To run the models in this tutorial, you will need the following tokens:
-- **OpenAI Token**: Required to access all the OpenAI-related tasks when using OpenAI as an engine. This token enables the use of OpenAI's language models for various natural language processing tasks.
-- **Huggingface Token**: Required only to access gated models such as Mistral on the Huggingface platform. Gated models are those that have restricted access due to licensing or usage policies, and a token is necessary to authenticate and use these models. For more information, check this [Huggingface documentation](https://huggingface.co/docs/hub/en/models-gated).
-Make sure to have these tokens ready before proceeding with the tutorial to ensure a smooth and uninterrupted workflow.
-</Tip>
 
 ### Text Classification
 Here is an example of how to use the `predict` function for text classification using a Hugging Face model:
@@ -77,7 +70,8 @@ SELECT
         task := 'text-classification',
         engine := 'huggingface',
         input := text_column,
-        model := 'google-bert/bert-base-uncased'
+        model := 'google-bert/bert-base-uncased',
+        token := 'huggingface_token'
     ) AS prediction
 FROM
     documents
@@ -101,7 +95,8 @@ SELECT
         task := 'sentiment-analysis',
         engine := 'huggingface',
         input := text_column,
-        model := 'distilbert/distilbert-base-uncased'
+        model := 'distilbert/distilbert-base-uncased',
+        token := 'huggingface_token'
     ) AS prediction
 FROM
     reviews
@@ -124,7 +119,8 @@ SELECT
         task := 'image-classification',
         engine := 'huggingface',
         input := image_path,
-        model := 'google/vit-base-patch16-224'
+        model := 'google/vit-base-patch16-224',
+        token := 'huggingface_token'
     ) AS prediction
 FROM
     images
