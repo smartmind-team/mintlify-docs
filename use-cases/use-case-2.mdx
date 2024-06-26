@@ -18,6 +18,14 @@ wget https://raw.githubusercontent.com/smartmind-team/mintlify-docs/main/example
 ```
 </Note>
 
+<Tip>
+To run the models in this tutorial, you will need the following tokens:
+- **OpenAI Token**: Required to access all the OpenAI-related tasks when using OpenAI as an engine. This token enables the use of OpenAI's language models for various natural language processing tasks.
+- **Huggingface Token**: Required only to access gated models such as Mistral on the Huggingface platform. Gated models are those that have restricted access due to licensing or usage policies, and a token is necessary to authenticate and use these models. For more information, check this [Huggingface documentation](https://huggingface.co/docs/hub/en/models-gated).
+Make sure to have these tokens ready before proceeding with the tutorial to ensure a smooth and uninterrupted workflow.
+</Tip>
+
+
 ## Dataset
 We will be working with two datasets:
 
@@ -190,6 +198,24 @@ We will be working with two datasets:
 1. Obtain photo files and their metadata (e.g., photo dimensions, photographer names).
 2. Perform advanced queries on both structured and unstructured data using ThanoSQL to retrieve the desired metadata.
 
+## Displaying ThanoSQL Query Results in Jupyter Notebooks
+The check_result function is designed to handle and display the results of a database query executed via the ThanoSQL client. It ensures that any errors are reported, and successful query results are displayed in a user-friendly format.
+
+**Note: This function is specifically designed to work in Jupyter notebook environments.**
+
+```python
+from IPython.display import display
+
+def check_query_result(query_result):
+    if query_result.error_result:
+        print(query_result.error_result)
+    else:
+        if query_result.records is not None and len(query_result.records.data) > 0:
+            df = query_result.records.to_df()
+            display(df)
+        else:
+            print("Query executed successfully")
+```
 ## Procedure
 0. **Download Datasets**:
     - First, we will load the datasets into pandas DataFrames and display their shapes to understand the structure and size of the data.
@@ -244,7 +270,7 @@ We will be working with two datasets:
         ADD COLUMN IF NOT EXISTS embedding vector(512)
         """
     )
-    query_result.state
+    check_query_result(query_result)
     ```
     On execution, we get: 
     ![Complete](/images/use-cases/use-case-2/complete.png)
@@ -277,7 +303,7 @@ We will be working with two datasets:
         unsplash_embed_sample.image_path = calculated_embeddings.image_path
         """
     )
-    query_result.state
+    check_query_result(query_result)
     ```
     On execution, we get: 
     ![Complete](/images/use-cases/use-case-2/complete.png)
@@ -291,12 +317,12 @@ We will be working with two datasets:
         SELECT 
             thanosql.embed(
                 engine := 'huggingface',
-                input := '/home/jovyan/use_case_2_search/coastal_cliff.jpg',
+                input := 'coastal_cliff.jpg',
                 model := 'openai/clip-vit-base-patch32'
             ) AS embedding 
         """
     )
-    query_result.records.to_df()
+    check_query_result(query_result)
     ```
     On execution, we get: 
     ![Result 1](/images/use-cases/use-case-2/result-1.png)
@@ -311,7 +337,7 @@ We will be working with two datasets:
         ORDER BY embedding <-> (
             SELECT thanosql.embed(
                 engine := 'huggingface',
-                input := '/home/jovyan/use_case_2_search/coastal_cliff.jpg',
+                input := 'coastal_cliff.jpg',
                 model := 'openai/clip-vit-base-patch32'
                 ) 
                 AS embedding
@@ -319,7 +345,7 @@ We will be working with two datasets:
         LIMIT 3
         """
     )
-    query_result.records.to_df()
+    check_query_result(query_result)
     ```
     On execution, we get: 
     ![Result 2](/images/use-cases/use-case-2/result-2.png)
@@ -353,7 +379,7 @@ We will be working with two datasets:
             SELECT 
             thanosql.embed(
                 engine := 'huggingface',
-                input := '/home/jovyan/use_case_2_search/coastal_cliff.jpg',
+                input := 'coastal_cliff.jpg',
                 model := 'openai/clip-vit-base-patch32'
                 )
             )
@@ -417,7 +443,7 @@ We will be working with two datasets:
         LIMIT 1
         """
     )
-    query_result.records.to_df()
+    check_query_result(query_result)
     ```
     On execution, we get: 
     ![Result 4](/images/use-cases/use-case-2/result-4.png)
