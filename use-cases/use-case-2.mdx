@@ -221,12 +221,9 @@ def check_query_result(query_result):
     - First, we will load the datasets into pandas DataFrames and display their shapes to understand the structure and size of the data.
     ```python
     import pandas as pd
-    unsplash_meta = pd.read_csv("unsplash_meta.csv")
-    unsplash_embed = pd.read_csv("unsplash_embed.csv")
     unsplash_embed_sample = pd.read_csv("unsplash_embed_sample.csv")
     unsplash_meta_sample = pd.read_csv("unsplash_meta_sample.csv")   
 
-    print("unsplash_meta:", unsplash_meta.shape, "unsplash_embed:", unsplash_embed.shape)
     print("unsplash_meta_sample:", unsplash_meta_sample.shape, "unsplash_embed_sample:", unsplash_embed_sample.shape)
     ```
     On execution, we get: 
@@ -235,10 +232,20 @@ def check_query_result(query_result):
 
 1. **Import ThanoSQL Library**:
     - Next, we need to import the ThanoSQL library and create a client instance. This client will be used to interact with the ThanoSQL engine.
+
+    <Note>
+    **You can find your API Token and Engine URL by following these steps:**
+
+    1. Go to your workspace’s settings page.
+    2. Navigate to the "Developer" tab.
+    3. Locate and copy your API Token and Engine URL.
+    </Note>
+
     ```python
     from thanosql import ThanoSQL
     client = ThanoSQL(api_token="your_api_token", engine_url="engine_url")
     ```
+
 
 2. **Upload Data to Tables**:
     - We upload the `unsplash_embed_sample` table to ThanoSQL. This table contains image paths and their corresponding embeddings.
@@ -284,10 +291,10 @@ def check_query_result(query_result):
         WITH calculated_embeddings 
         AS (
         SELECT
-            image_path,
+            photo_url,
             thanosql.embed(
                 engine := 'huggingface',
-                input := image_path,
+                input := photo_url,
                 model := 'openai/clip-vit-base-patch32'
             ) AS embedding
         FROM
@@ -300,7 +307,7 @@ def check_query_result(query_result):
         FROM 
             calculated_embeddings
         WHERE
-        unsplash_embed_sample.image_path = calculated_embeddings.image_path
+        unsplash_embed_sample.photo_url = calculated_embeddings.photo_url
         """
     )
     check_query_result(query_result)
@@ -310,14 +317,87 @@ def check_query_result(query_result):
     - This step uses the `openai/clip-vit-base-patch32` model to calculate embeddings for each image and updates the `unsplash_embed_sample` table with these embeddings.
 
 5. **Search by Image**:
-    - We can perform a similarity search using an example image. Here, we retrieve the embedding vector for an image of a coastal cliff.
+    - In this section, we'll perform a similarity search using an example image. We will retrieve the embedding vector for an image of a coastal cliff and then use that vector to find similar images.
+    
+    <Note>
+    **Install Required Libraries**
+    
+    This command installs the Pillow and matplotlib libraries, which are necessary for image processing and display.
+    
+    ```
+    !pip install pillow matplotlib
+    ```
+    </Note>
+
+    - This function, `show_images`, displays images from URLs. It accepts either a single URL or a DataFrame containing multiple URLs. The function fetches each image using the URL, processes it using PIL, and then displays it using matplotlib.
+
+    ```python
+    import requests
+    from PIL import Image
+    from io import BytesIO
+    import matplotlib.pyplot as plt
+    import pandas as pd
+
+    def show_images(input, image_column_name=None):
+        """
+        Display images from URLs. The input can be either a single URL or a DataFrame containing multiple URLs.
+        
+        Args:
+            input (str or DataFrame): Single image URL or DataFrame containing image URLs.
+            image_column_name (str): The column name containing image URLs if input is a DataFrame.
+        """
+        # Check if the input is a DataFrame
+        if isinstance(input, pd.DataFrame):
+            df = input
+            num_images = len(df)
+            fig, axes = plt.subplots(1, num_images, figsize=(15, 5))
+            
+            if num_images == 1:
+                axes = [axes]
+            
+            for idx, (image_url, ax) in enumerate(zip(df[image_column_name], axes)):
+                response = requests.get(image_url)
+                response.raise_for_status()
+                image = Image.open(BytesIO(response.content))
+                ax.imshow(image)
+                ax.axis('off')
+        
+        # If the input is a single URL
+        elif isinstance(input, str):
+            fig, ax = plt.subplots(figsize=(5, 5))
+            response = requests.get(input)
+            response.raise_for_status()
+            image = Image.open(BytesIO(response.content))
+            ax.imshow(image)
+            ax.axis('off')
+
+        else:
+            raise ValueError("Input must be either a DataFrame or a single image URL (str).")
+        
+        plt.tight_layout()
+        plt.show()
+    ```
+
+    - This calls the `show_images` function with a single image URL of a coastal cliff. It will display the image inline in the notebook.
+
+
+    ```python
+    show_images('https://images.unsplash.com/photo-1506887419028-47afaf38c27e')
+    ```
+
+    On execution, we get: 
+    ![Result 2](/images/use-cases/use-case-2/image-display-0.png)
+
+
+    - This query generates an embedding for the specified image and retrieves it.
+
     ```python
     query_result = client.query.execute(
         """
         SELECT 
             thanosql.embed(
                 engine := 'huggingface',
-                input := 'coastal_cliff.jpg',
+                input := 'https://images.unsplash.com/photo-1506887419028-47afaf38c27e',
                 model := 'openai/clip-vit-base-patch32'
             ) AS embedding 
         """
@@ -326,22 +406,22 @@ def check_query_result(query_result):
     ```
     On execution, we get: 
     ![Result 1](/images/use-cases/use-case-2/result-1.png)
-    - This query generates an embedding for the specified image and retrieves it.
-
+    
     - We then use this embedding to find the most similar images in the `unsplash_embed_sample` table.
     ```python
     query_result = client.query.execute(
         """
+        WITH calculated_embeddings AS (
+            SELECT 
+                thanosql.embed(
+                    engine := 'huggingface',
+                    input := 'https://images.unsplash.com/photo-1506887419028-47afaf38c27e',
+                    model := 'openai/clip-vit-base-patch32'
+                ) AS embedding
+        )
         SELECT photo_id, embedding
         FROM unsplash_embed_sample
-        ORDER BY embedding <-> (
-            SELECT thanosql.embed(
-                engine := 'huggingface',
-                input := 'coastal_cliff.jpg',
-                model := 'openai/clip-vit-base-patch32'
-                ) 
-                AS embedding
-            )
+        ORDER BY embedding <-> (SELECT embedding FROM calculated_embeddings)
         LIMIT 3
         """
     )
@@ -379,7 +459,7 @@ def check_query_result(query_result):
             SELECT 
             thanosql.embed(
                 engine := 'huggingface',
-                input := 'coastal_cliff.jpg',
+                input := 'https://images.unsplash.com/photo-1506887419028-47afaf38c27e',
                 model := 'openai/clip-vit-base-patch32'
                 )
             )
@@ -396,37 +476,16 @@ def check_query_result(query_result):
 
 7. **Display Retrieved Images**:
     - We can now display the retrieved images using the metadata.
+
     ```python
-    import requests
-    from PIL import Image
-    from io import BytesIO
-    import matplotlib.pyplot as plt
-
-    def show_images(df, image_column_name):
-        num_images = len(df)
-        fig, axes = plt.subplots(1, num_images, figsize=(15, 5))
-        
-        if num_images == 1:
-            axes = [axes]
-        
-        for idx, (image_url, ax) in enumerate(zip(df[image_column_name], axes)):
-            response = requests.get(image_url)
-            response.raise_for_status()
-            image = Image.open(BytesIO(response.content))
-            ax.imshow(image)
-            ax.axis('off')
-
-        plt.tight_layout()
-        plt.show()
-
     show_images(df, 'photo_image_url')
     ```
+
     On execution, we get: 
     ![Image Display 1](/images/use-cases/use-case-2/image-display-1.png)
-    - This code fetches and displays the images using their paths from the metadata.
 
 8. **Search by Text**:
-    - We can also perform a similarity search using a text description. Here, we search for the image that is most similar to the description "a photo of a coastal cliff".
+    - We can also perform a similarity search using a text description. Here, we search for the image that is most similar to the description "a photo of the desert".
     ```python
     query_result = client.query.execute(
         """
@@ -436,7 +495,7 @@ def check_query_result(query_result):
         SELECT 
         thanosql.embed(
             engine := 'huggingface',
-            input := 'a photo of a coastal cliff',
+            input := 'a photo of the desert',
             model := 'openai/clip-vit-base-patch32'
             )
         )
@@ -476,7 +535,7 @@ def check_query_result(query_result):
             SELECT 
             thanosql.embed(
                 engine := 'huggingface',
-                input := 'a photo of a coastal cliff',
+                input := 'a photo of the desert',
                 model := 'openai/clip-vit-base-patch32'
                 )
             )
