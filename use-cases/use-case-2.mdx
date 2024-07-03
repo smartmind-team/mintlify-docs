@@ -379,7 +379,7 @@ def show_images(input, image_column_name=None):
     ```
     On execution, we get: 
     ![Complete](/images/use-cases/use-case-2/complete.png)
-    - This step uses the `openai/clip-vit-base-patch32` model to calculate embeddings for each image and updates the `unsplash_embed_sample` table with these embeddings.
+    
 
 5. **Search by Image**:
     - In this section, we'll perform a similarity search using an example image. We will retrieve the embedding vector for an image of a coastal cliff and then use that vector to find similar images. 
@@ -451,7 +451,7 @@ def show_images(input, image_column_name=None):
     On execution, we get: 
     ![Result 1](/images/use-cases/use-case-2/result-3.png)
     
-    - This query retrieves metadata such as the image URL, submission date, dimensions, and photographer information for the images found in the previous step.
+    
 
     - We can now display the retrieved images using the metadata.
 
@@ -520,7 +520,7 @@ def show_images(input, image_column_name=None):
     ```
     On execution, we get: 
     ![Result 5](/images/use-cases/use-case-2/result-5.png)
-    - This query retrieves metadata for the image that matches the text description.
+   
 
     - Finally, we display the retrieved image.
     ```python
