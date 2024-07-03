@@ -106,92 +106,70 @@ def check_query_result(query_result):
     - **Using Mistral LLM**:
       ```python
       query_result = client.query.execute("""
-      -- This query categorizes call transcripts using a Huggingface model and computes average metrics for each agent and category.
-
-      -- Step 1: Cleanup resources before starting the main query
       SELECT thanosql.cleanup_resources();
 
-      -- Step 2: Categorize call transcripts and compute average metrics
       SELECT 
-            c."AgentID",                     
-            t.category,                       
-            AVG(c."SatisfactionScore") AS avg_satisfaction_score,  
-            AVG(c."CallDuration") AS avg_call_duration,            
-            AVG(c."ResolutionRate") AS avg_resolution_rate         
+          c."AgentID", t.category,
+          AVG(c."SatisfactionScore") AS avg_satisfaction_score,
+          AVG(c."CallDuration") AS avg_call_duration,
+          AVG(c."ResolutionRate") AS avg_resolution_rate
       FROM 
-          (
-              -- Step 3: Generate categories for call transcripts using a Huggingface model
-              SELECT 
-                  "CallID",                  
-                  thanosql.generate(
-                      input := prompt,       
-                      engine := 'huggingface', 
-                      model := 'mistralai/Mistral-7B-Instruct-v0.2', 
-                      token := 'your_token', 
-                      model_args := '{"max_new_tokens": 7}' 
-                  ) AS category              
-              FROM
-                  transcript                 
-          ) AS t
+          (SELECT "CallID",
+              thanosql.generate(
+                  input := prompt,
+                  engine := 'huggingface',
+                  model := 'mistralai/Mistral-7B-Instruct-v0.2',
+                  token := 'your_token',
+                  model_args := '{"max_new_tokens": 7}'
+              ) AS category
+          FROM
+              transcript) AS t
       JOIN 
-          calls AS c ON t."CallID" = c."CallID" 
-              -- Join the generated categories with the 'calls' table on 'CallID'
+          calls AS c ON t."CallID" = c."CallID"
       GROUP BY 
-          c."AgentID", t.category            
-              -- Group the results by agent ID and category
+          c."AgentID", t.category
       ORDER BY
-          c."AgentID";                       
-              -- Order the results by agent ID
+          c."AgentID"
       """)
       check_query_result(query_result)
       ```
       On execution, we get: 
       ![Result 1](/images/use-cases/use-case-1/result-1.png)
-    
+      - This query classifies each call transcript into predefined categories using the Mistral LLM, then calculates and aggregates key performance metrics (average satisfaction score, average call duration, and average resolution rate) for each category and agent.
 
     - Classify conversations using the OpenAI GPT-4o and calculate performance metrics.
 
     - **Using OpenAI GPT-4o**:
       ```python
       query_result = client.query.execute("""
-      -- This query categorizes call transcripts using a model from OpenAI, computes average metrics for each category.
-
-      -- Step 1: Cleanup resources before starting the main query
       SELECT * FROM thanosql.cleanup_resources();
 
-      -- Step 2: Categorize call transcripts and compute average metrics
       SELECT 
-          t.category,                       
-          AVG(c."SatisfactionScore") AS avg_satisfaction_score,   
-          AVG(c."CallDuration") AS avg_call_duration,             
-          AVG(c."ResolutionRate") AS avg_resolution_rate          
+          t.category,
+          AVG(c."SatisfactionScore") AS avg_satisfaction_score,
+          AVG(c."CallDuration") AS avg_call_duration,
+          AVG(c."ResolutionRate") AS avg_resolution_rate
       FROM 
-          (
-              -- Step 3: Generate categories for call transcripts using a model from OpenAI
-              SELECT 
-                  "CallID",                  
-                  thanosql.generate(
-                      input := prompt,       
-                      engine := 'openai',    
-                      model := 'gpt-4o',     
-                      token := 'your_openai_api_key', 
-                      model_args := '{"temperature": 0}' 
-                  ) AS category             
-              FROM
-                  transcript                
-          ) AS t
+          (SELECT "CallID",
+              thanosql.generate(
+                  input := prompt,
+                  engine := 'openai',
+                  model := 'gpt-4o',
+                  token := 'your_openai_api_key',
+                  model_args := '{"temperature": 0}'
+              ) AS category
+          FROM
+              transcript) AS t
       JOIN 
-          calls AS c ON t."CallID" = c."CallID" 
-              -- Join the generated categories with the 'calls' table on 'CallID'
+          calls AS c ON t."CallID" = c."CallID"
       GROUP BY 
-          t.category;                       
-              -- Group the results by generated category
+          t.category;
       """)
       check_query_result(query_result)
       ```
       On execution, we get: 
       ![Result 2](/images/use-cases/use-case-1/result-2.png)
-    
+      - This query classifies each call transcript into predefined categories using the OpenAI GPT-4o model, then calculates and aggregates key performance metrics (average satisfaction score, average call duration, and average resolution rate) for each category.
 
 ## Conclusion
 By following these steps, you can effectively analyze call center data, classify call transcripts into meaningful categories using natural language processing, and derive valuable insights into call durations, customer satisfaction, and resolution rates for each category. These insights can help you understand the performance of your call center agents and identify areas for improvement, ultimately leading to enhanced customer satisfaction and operational efficiency.
