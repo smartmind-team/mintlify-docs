@@ -108,130 +108,172 @@ def check_query_result(query_result):
     - **Predict Sentiment for Reviews**:
       ```python
       query_result = client.query.execute("""
+          -- This query predicts the sentiment of product review comments using a specified model
+          -- and retrieves the sentiment along with the product ID and text of the review.
           SELECT
-              "ProductId",
-              "Text",
-              (jsonb_array_elements_text(
-                  (thanosql.predict(
-                      input := "Text",
-                      model := 'bhadresh-savani/distilbert-base-uncased-emotion',
-                      model_args := '{"top_k": 1}'
-                  )::jsonb)
-              )::jsonb ->> 'label') AS "Sentiment"
+              "ProductId",                   
+              "Text",                        
+              (
+                  jsonb_array_elements_text(
+                      (
+                          -- Step 1: Predict sentiment for the review comment
+                          thanosql.predict(
+                              input := "Text",                      
+                              model := 'bhadresh-savani/distilbert-base-uncased-emotion', 
+                              model_args := '{"top_k": 1}'          
+                          )::jsonb                                 
+                          -- Cast the result to JSONB
+                      )
+                  )::jsonb ->> 'label'                            
+                  -- Extract the 'label' field from the JSONB array
+              ) AS "Sentiment"                                     
+              -- Alias the result as 'Sentiment'
           FROM
-              review_comments
-          LIMIT 10;
+              review_comments                                      
+          LIMIT 10;         
       """)
       check_query_result(query_result)
       ```
     On execution, we get: 
     ![Predicted Sentiment](/images/use-cases/use-case-3/result-1.png)
-      - This query predicts the sentiment of each review using the `distilbert-base-uncased-emotion` model and retrieves the first 10 predictions to confirm the process.
+     
 
     - **Link Reviews with Sales Data**:
       - Group reviews by `ProductId` and `Sentiment` to show the count of each sentiment and the corresponding sales data for each product.
       ```python
       query_result = client.query.execute("""
+          -- This query calculates the total quantity sold for each product and the count of each sentiment from reviews.
+          -- It uses a model to predict the sentiment of review comments and joins this information with sales data.
           SELECT 
-              s."ProductId",
-              SUM(s."Score") AS total_quantity_sold,
-              r."Sentiment",
-              COUNT(r."Sentiment") AS sentiment_count
+              s."ProductId",                             
+              SUM(s."Score") AS total_quantity_sold,     
+              r."Sentiment",                             
+              COUNT(r."Sentiment") AS sentiment_count    
           FROM 
-              review_sales s
+              review_sales s                             
           JOIN
               (
+                  -- Subquery to predict sentiment for review comments
                   SELECT
-                      "ProductId",
-                      "Text",
-                      (jsonb_array_elements_text(
-                          (thanosql.predict(
-                              input := "Text",
-                              model := 'bhadresh-savani/distilbert-base-uncased-emotion',
-                              model_args := '{"top_k": 1}'
-                          )::jsonb)
-                      )::jsonb ->> 'label') AS "Sentiment"
+                      "ProductId",                       
+                      "Text",                            
+                      (
+                          jsonb_array_elements_text(
+                              (
+                                  thanosql.predict(
+                                      input := "Text",    
+                                      model := 'bhadresh-savani/distilbert-base-uncased-emotion', 
+                                      model_args := '{"top_k": 1}' 
+                                  )::jsonb                
+                                  -- Cast the result to JSONB
+                              )
+                          )::jsonb ->> 'label'            
+                          -- Extract the 'label' field from the JSONB array
+                      ) AS "Sentiment"                  
                   FROM
-                      review_comments
-                  LIMIT 100
+                      review_comments                   
+                  LIMIT 100                             
               ) r
           ON 
-              s."ProductId" = r."ProductId"
+              s."ProductId" = r."ProductId"             
+                  -- Join condition: match product IDs in sales and review comments
           GROUP BY 
-              s."ProductId", r."Sentiment"
+              s."ProductId", r."Sentiment"                
+              -- Group the results by product ID and sentiment
           ORDER BY 
-              s."ProductId", sentiment_count DESC;
-      """)
+              s."ProductId", sentiment_count DESC;        
+              -- Order the results by product ID and sentiment count in descending order
+          """)
       check_query_result(query_result)
       ```
     On execution, we get: 
     ![Linked Reviews and Sales Data](/images/use-cases/use-case-3/result-2.png)
-      - This query links the reviews with sales data by grouping them by `ProductId` and `Sentiment`. It calculates the total quantity sold and the count of each sentiment for each product.
+     
 
     - **Analyze Positive Reviews and Sales Performance**:
       - Show the relationship between sales and positive reviews (`joy`, `love`, `surprise`, `neutral`) for each product.
       ```python
       query_result = client.query.execute("""
+          -- This query identifies products with positive reviews and compares their sales performance against the average sales.
           WITH positive_reviews AS (
+              -- Step 1: Calculate the count of positive reviews for each product
               SELECT 
-                  "ProductId",
-                  COUNT(*) AS positive_count
+                  "ProductId",                              
+                  COUNT(*) AS positive_count                
               FROM 
                   (
+                      -- Subquery to predict sentiment for review comments
                       SELECT
-                          "ProductId",
-                          "Text",
-                          (jsonb_array_elements_text(
-                              (thanosql.predict(
-                                  input := "Text",
-                                  model := 'bhadresh-savani/distilbert-base-uncased-emotion',
-                                  model_args := '{"top_k": 1}'
-                              )::jsonb)
-                          )::jsonb ->> 'label') AS "Sentiment"
+                          "ProductId",                      
+                          "Text",                           
+                          (
+                              jsonb_array_elements_text(
+                                  (
+                                      thanosql.predict(
+                                          input := "Text", 
+                                          model := 'bhadresh-savani/distilbert-base-uncased-emotion',
+                                          model_args := '{"top_k": 1}' 
+                                      )::jsonb             
+                                          -- Cast the result to JSONB
+                                  )
+                              )::jsonb ->> 'label'          
+                                  -- Extract the 'label' field from the JSONB array
+                          ) AS "Sentiment"                  
                       FROM
-                          review_comments
-                      LIMIT 100
-                  )
+                          review_comments                   
+                      LIMIT 100                             
+                  ) AS subquery
               WHERE 
-                  "Sentiment" IN ('joy', 'love', 'surprise', 'neutral')
+                  "Sentiment" IN ('joy', 'love', 'surprise', 'neutral') 
+                      -- Filter for positive sentiments
               GROUP BY 
-                  "ProductId"
+                  "ProductId"                               
+                      -- Group the results by product ID
           ),
           total_sales AS (
+              -- Step 2: Calculate the total quantity sold for each product
               SELECT 
-                  "ProductId",
-                  SUM("Score") AS total_quantity_sold
+                  "ProductId",                              
+                  SUM("Score") AS total_quantity_sold       
               FROM 
-                  review_sales
+                  review_sales                              
               GROUP BY 
-                  "ProductId"
+                  "ProductId"                               
           )
           SELECT 
-              ts."ProductId",
-              ts.total_quantity_sold,
-              COALESCE(pr.positive_count, 0) AS positive_count,
+              ts."ProductId",                               
+              ts.total_quantity_sold,                       
+              COALESCE(pr.positive_count, 0) AS positive_count, 
+                  -- Count of positive reviews, 0 if no positive reviews
               CASE 
-                  WHEN pr.positive_count IS NULL THEN 'No Positive Reviews'
+                  WHEN pr.positive_count IS NULL THEN 'No Positive Reviews' 
+                      -- No positive reviews case
                   WHEN ts.total_quantity_sold > (
                       SELECT AVG(total_quantity_sold) 
                       FROM total_sales
-                  ) THEN 'Above Average Sales'
-                  ELSE 'Below Average Sales'
-              END AS sales_performance
+                  ) THEN 'Above Average Sales'              
+                      -- Above average sales case
+                  ELSE 'Below Average Sales'                
+                      -- Below average sales case
+              END AS sales_performance                      
+                  -- Categorized sales performance
           FROM 
-              total_sales ts
+              total_sales ts                                
           LEFT JOIN 
-              positive_reviews pr
+              positive_reviews pr                           
+                  -- Left join with positive reviews data
           ON 
-              ts."ProductId" = pr."ProductId"
+              ts."ProductId" = pr."ProductId"               
+                  -- Join condition: match product IDs
           ORDER BY 
-              ts.total_quantity_sold DESC;
+              ts.total_quantity_sold DESC;                  
+                  -- Order the results by total quantity sold in descending order
       """)
       check_query_result(query_result)
       ```
     On execution, we get: 
     ![Positive Reviews and Sales Performance](/images/use-cases/use-case-3/result-3.png)
-      - This query analyzes the relationship between positive reviews and sales performance for each product. It categorizes the sales performance based on the average sales.
+   
 
 ## Conclusion
 This use case has guided you through the process of using ThanoSQL to analyze product reviews and their impact on sales performance. By classifying reviews into emotional categories and linking them with sales data, you can uncover valuable insights that help in understanding customer sentiment and its correlation with product success. This analysis can inform your marketing strategies, product development, and customer service approaches, ultimately contributing to improved customer satisfaction and business growth.
