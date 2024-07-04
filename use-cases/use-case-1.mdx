@@ -28,18 +28,17 @@ Make sure to have these tokens ready before proceeding with the tutorial to ensu
 ## Dataset
 We will be working with the following datasets:
 - **Counseling Staff Information Table (agents)**: Contains details about the call center agents.
-  - `AgentID`: Unique identifier for each agent.
-  - `AgentName`: Name of the agent.
+  - `agent_id`: Unique identifier for each agent.
+  - `agent_name`: Name of the agent.
 - **Consultation Call Metadata Table (calls)**: Records metadata for each call.
-  - `CallID`: Unique identifier for each call.
-  - `AgentID`: Identifier linking the call to the agent.
-  - `SatisfactionScore`: Customer satisfaction score for the call.
-  - `CallDuration`: Duration of the call.
-  - `ResolutionRate`: Rate at which the call issue was resolved.
+  - `call_id`: Unique identifier for each call.
+  - `agent_id`: Identifier linking the call to the agent.
+  - `satisfaction_score`: Customer satisfaction score for the call.
+  - `call_duration`: Duration of the call.
+  - `resolution_rate`: Rate at which the call issue was resolved.
 - **Consultation Call Transcription Table (transcript)**: Contains the text of the conversations.
-  - `CallID`: Identifier linking the call to the transcription.
-  - `Conversation`: Text of the conversation during the call.
-  - `prompt`: Prompt for LLM generation.
+  - `call_id`: Identifier linking the call to the transcription.
+  - `conversation`: Text of the conversation during the call.
 
 ## Goals
 1. Classify call transcripts into meaningful categories using LLMs.
@@ -106,42 +105,41 @@ def check_query_result(query_result):
     - **Using Mistral LLM**:
       ```python
       query_result = client.query.execute("""
-      -- This query categorizes call transcripts using a Huggingface model and computes average metrics for each agent and category.
+          -- This query categorizes call transcripts using a Huggingface model and computes average metrics for each agent and category.
 
-      -- Step 1: Cleanup resources before starting the main query
-      SELECT thanosql.cleanup_resources();
+          -- Step 1: Cleanup resources before starting the main query
+          SELECT thanosql.cleanup_resources();
 
-      -- Step 2: Categorize call transcripts and compute average metrics
-      SELECT 
-            c."AgentID",                     
-            t.category,                       
-            AVG(c."SatisfactionScore") AS avg_satisfaction_score,  
-            AVG(c."CallDuration") AS avg_call_duration,            
-            AVG(c."ResolutionRate") AS avg_resolution_rate         
-      FROM 
-          (
-              -- Step 3: Generate categories for call transcripts using a Huggingface model
-              SELECT 
-                  "CallID",                  
-                  thanosql.generate(
-                      input := prompt,       
-                      engine := 'huggingface', 
-                      model := 'mistralai/Mistral-7B-Instruct-v0.2', 
-                      token := 'your_token', 
-                      model_args := '{"max_new_tokens": 7}' 
-                  ) AS category              
-              FROM
-                  transcript                 
-          ) AS t
-      JOIN 
-          calls AS c ON t."CallID" = c."CallID" 
-              -- Join the generated categories with the 'calls' table on 'CallID'
-      GROUP BY 
-          c."AgentID", t.category            
-              -- Group the results by agent ID and category
-      ORDER BY
-          c."AgentID";                       
-              -- Order the results by agent ID
+          -- Step 2: Categorize call transcripts and compute average metrics
+          SELECT 
+              c.agent_id,                     
+              t.category,                       
+              AVG(c.satisfaction_score) AS avg_satisfaction_score,  
+              AVG(c.call_duration) AS avg_call_duration,            
+              AVG(c.resolution_rate) AS avg_resolution_rate         
+          FROM 
+              (
+                  -- Generate categories for call transcripts using a Huggingface model
+                  SELECT 
+                      t.call_id,                  
+                      thanosql.generate(
+                          input := CONCAT(
+                              '<s>[INST]You are a classification assistant. Your task is to analyze a conversation between an assistant and a human and determine the most appropriate category for the conversation <<<>>> into one of the following predefined categories: Technology, Refund, Shipping, ACCOUNT, CANCELLATION_FEE, CONTACT, DELIVERY, Feedback, Invoice, Newsletter, Order\n\nYou will only respond with the category. Do not include the word "Category". Do not provide explanations or notes. Do not change the line.[/INST]\n\n<<<\nConversation: ',
+                              t.conversation
+                          ),       
+                          engine := 'thanosql', 
+                          model := 'smartmind/Mistral-7B-Instruct-v0.2', 
+                          model_args := '{"max_new_tokens": 7}' 
+                      ) AS category              
+                  FROM
+                      transcript AS t                
+              ) AS t
+          JOIN 
+              calls AS c ON t.call_id = c.call_id 
+          GROUP BY 
+              c.agent_id, t.category            
+          ORDER BY
+              c.agent_id;    
       """)
       check_query_result(query_result)
       ```
@@ -154,38 +152,41 @@ def check_query_result(query_result):
     - **Using OpenAI GPT-4o**:
       ```python
       query_result = client.query.execute("""
-      -- This query categorizes call transcripts using a model from OpenAI, computes average metrics for each category.
+          -- This query categorizes call transcripts using a model from OpenAI, computes average metrics for each category.
+        
+          -- Step 1: Cleanup resources before starting the main query
+          SELECT thanosql.cleanup_resources();
 
-      -- Step 1: Cleanup resources before starting the main query
-      SELECT * FROM thanosql.cleanup_resources();
-
-      -- Step 2: Categorize call transcripts and compute average metrics
-      SELECT 
-          t.category,                       
-          AVG(c."SatisfactionScore") AS avg_satisfaction_score,   
-          AVG(c."CallDuration") AS avg_call_duration,             
-          AVG(c."ResolutionRate") AS avg_resolution_rate          
-      FROM 
-          (
-              -- Step 3: Generate categories for call transcripts using a model from OpenAI
-              SELECT 
-                  "CallID",                  
-                  thanosql.generate(
-                      input := prompt,       
-                      engine := 'openai',    
-                      model := 'gpt-4o',     
-                      token := 'your_openai_api_key', 
-                      model_args := '{"temperature": 0}' 
-                  ) AS category             
-              FROM
-                  transcript                
-          ) AS t
-      JOIN 
-          calls AS c ON t."CallID" = c."CallID" 
-              -- Join the generated categories with the 'calls' table on 'CallID'
-      GROUP BY 
-          t.category;                       
-              -- Group the results by generated category
+          -- Step 2: Categorize call transcripts and compute average metrics
+          SELECT 
+              t.category,                       
+              AVG(c.satisfaction_score) AS avg_satisfaction_score,   
+              AVG(c.call_duration) AS avg_call_duration,             
+              AVG(c.resolution_rate) AS avg_resolution_rate          
+          FROM 
+              (
+                  -- Step 3: Generate categories for call transcripts using a model from OpenAI
+                  SELECT 
+                      t.call_id,                  
+                      thanosql.generate(
+                          input := CONCAT(
+                              '<s>[INST]You are a classification assistant. Your task is to analyze a conversation between an assistant and a human and determine the most appropriate category for the conversation <<<>>> into one of the following predefined categories: Technology, Refund, Shipping, ACCOUNT, CANCELLATION_FEE, CONTACT, DELIVERY, Feedback, Invoice, Newsletter, Order\n\nYou will only respond with the category. Do not include the word "Category". Do not provide explanations or notes. Do not change the line.[/INST]\n\n<<<\nConversation: ',
+                              t.conversation
+                          ),       
+                          engine := 'openai',    
+                          model := 'gpt-4o',     
+                          token := 'your_openai_api_key', 
+                          model_args := '{"temperature": 0}' 
+                      ) AS category             
+                  FROM
+                      transcript AS t                
+              ) AS t
+          JOIN 
+              calls AS c ON t.call_id = c.call_id 
+          GROUP BY 
+              t.category
+          ORDER BY
+              t.category;
       """)
       check_query_result(query_result)
       ```
