@@ -78,7 +78,7 @@ def check_query_result(query_result):
     table.get_records(limit=10).to_df()
     ```
     On execution, we get: 
-    ![Agents Table](/images/use-cases/use-case-1/table-1.png)
+    ![Agents Table](/images/use-cases/use-case-1/table-01.png)
     - This step uploads the `agents` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
 
     - Upload the `calls` table which records metadata for each call.
@@ -87,7 +87,7 @@ def check_query_result(query_result):
     table.get_records(limit=10).to_df()
     ```
     On execution, we get: 
-    ![Calls Table](/images/use-cases/use-case-1/table-2.png)
+    ![Calls Table](/images/use-cases/use-case-1/table-02.png)
     - This step uploads the `calls` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
 
     - Upload the `transcript` table which contains the text of the conversations.
@@ -96,7 +96,7 @@ def check_query_result(query_result):
     table.get_records(limit=10).to_df()
     ```
     On execution, we get: 
-    ![Transcript Table](/images/use-cases/use-case-1/table-3.png)
+    ![Transcript Table](/images/use-cases/use-case-1/table-03.png)
     - This step uploads the `transcript` data to ThanoSQL and retrieves the first 10 records to confirm the upload.
 
 3. **Classify Conversations and Aggregate Metrics**:
@@ -143,7 +143,7 @@ def check_query_result(query_result):
       check_query_result(query_result)
       ```
       On execution, we get: 
-      ![Result 1](/images/use-cases/use-case-1/result-1.png)
+      ![Result 1](/images/use-cases/use-case-1/result-01.png)
     
 
     - Classify conversations using the OpenAI GPT-4o and calculate performance metrics.
@@ -192,7 +192,7 @@ def check_query_result(query_result):
       check_query_result(query_result)
       ```
       On execution, we get: 
-      ![Result 2](/images/use-cases/use-case-1/result-2.png)
+      ![Result 2](/images/use-cases/use-case-1/result-02.png)
     
 
 ## Conclusion
