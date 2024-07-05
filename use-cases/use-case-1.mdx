@@ -112,8 +112,8 @@ def check_query_result(query_result):
 
           -- Step 2: Categorize call transcripts and compute average metrics
           SELECT 
-              c.agent_id,                     
-              t.category,                       
+              t.category,
+              COUNT(*),
               AVG(c.satisfaction_score) AS avg_satisfaction_score,  
               AVG(c.call_duration) AS avg_call_duration,            
               AVG(c.resolution_rate) AS avg_resolution_rate         
@@ -124,8 +124,9 @@ def check_query_result(query_result):
                       t.call_id,                  
                       thanosql.generate(
                           input := CONCAT(
-                              '<s>[INST]You are a classification assistant. Your task is to analyze a conversation between an assistant and a human and determine the most appropriate category for the conversation <<<>>> into one of the following predefined categories: Technology, Refund, Shipping, ACCOUNT, CANCELLATION_FEE, CONTACT, DELIVERY, Feedback, Invoice, Newsletter, Order\n\nYou will only respond with the category. Do not include the word "Category". Do not provide explanations or notes. Do not change the line.[/INST]\n\n<<<\nConversation: ',
-                              t.conversation
+                              '<s>[INST]You are a classification assistant. Your task is to analyze a conversation between an assistant and a human and determine the most appropriate category for the conversation <<<>>> into one of the following predefined categories: Technology, Refund, Shipping, ACCOUNT, CANCELLATION_FEE, CONTACT, DELIVERY, Feedback, Invoice, Newsletter, Order\n\nYou will only respond with one of the predefined categories. Reply with capital letters only. Do not start with category or categories. Do not provide explanations or notes. Do not change the line.[/INST]\n\n<<<\nConversation: ',
+                              conversation,
+                              '</s>\n>>>'
                           ),       
                           engine := 'thanosql', 
                           model := 'smartmind/Mistral-7B-Instruct-v0.2', 
@@ -137,9 +138,7 @@ def check_query_result(query_result):
           JOIN 
               calls AS c ON t.call_id = c.call_id 
           GROUP BY 
-              c.agent_id, t.category            
-          ORDER BY
-              c.agent_id;    
+              t.category            
       """)
       check_query_result(query_result)
       ```
@@ -156,10 +155,11 @@ def check_query_result(query_result):
         
           -- Step 1: Cleanup resources before starting the main query
           SELECT thanosql.cleanup_resources();
-
+  
           -- Step 2: Categorize call transcripts and compute average metrics
           SELECT 
-              t.category,                       
+              t.category,
+              COUNT(*),              
               AVG(c.satisfaction_score) AS avg_satisfaction_score,   
               AVG(c.call_duration) AS avg_call_duration,             
               AVG(c.resolution_rate) AS avg_resolution_rate          
@@ -171,7 +171,8 @@ def check_query_result(query_result):
                       thanosql.generate(
                           input := CONCAT(
                               '<s>[INST]You are a classification assistant. Your task is to analyze a conversation between an assistant and a human and determine the most appropriate category for the conversation <<<>>> into one of the following predefined categories: Technology, Refund, Shipping, ACCOUNT, CANCELLATION_FEE, CONTACT, DELIVERY, Feedback, Invoice, Newsletter, Order\n\nYou will only respond with the category. Do not include the word "Category". Do not provide explanations or notes. Do not change the line.[/INST]\n\n<<<\nConversation: ',
-                              t.conversation
+                              conversation,
+                              '</s>\n>>>'
                           ),       
                           engine := 'openai',    
                           model := 'gpt-4o',     
