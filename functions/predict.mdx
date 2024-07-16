@@ -28,7 +28,7 @@ FROM
 
 | Parameter       | Type   | Default         | Description                                                                                           | Options                                                                                                                                              |
 |-----------------|--------|-----------------|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `task`          | string |                 | The prediction task to perform.                                                                       | `'text-classification'`, `'sentiment-analysis'`, `'image-classification'` |
+| `task`          | string |                 | The prediction task to perform.                                                                       | `'text-classification'`, `'sentiment-analysis'`, `'summarization'`, `'image-classification'`, `'image-segmentation'`, `'audio-classification'`, `'automatic-speech-recognition'`, `'video-classification'` |
 | `engine`        | string | `'huggingface'` | The engine to use for performing predictions.                                                         | `'huggingface'`: Uses models from HuggingFace.             |
 | `input`         | string |                 | The input data for the prediction task. It can be text, an image URL, or a path to a local file.       | N/A                                                                                                                                                  |
 | `model`         | string |                 | The name or path of the pre-trained model.                                                            | Example: `'google-bert/bert-base-uncased'`                                                                                                                        |
@@ -45,7 +45,12 @@ FROM
 ## Currently Supported Tasks 
 - **Text Classification**
 - **Sentiment Analysis**
+- **Summarization**
 - **Image Classification**
+- **Image Segmentation**
+- **Audio Classification**
+- **Automatic Speech Recognition**
+- **Video Classification**
 
 <Note>
 We are actively adding more tasks to enhance your experience.
@@ -115,6 +120,29 @@ On execution, we get:
 ```
 
 
+### Summarization
+Here is an example of how to use the `predict` function for summarization using a Hugging Face model:
+
+```sql
+SELECT 
+    thanosql.predict(
+        task := 'summarization',
+        engine := 'huggingface',
+        input := text_column,
+        model := 'Falconsai/text_summarization'
+    ) AS prediction
+FROM
+    documents
+```
+On execution, we get: 
+```
+| prediction                                       |
+|-----------------------------------------------|
+| 'The product exceeded my expectations, and I would highly recommend it to others.' |
+| 'The experience was disappointing due to poor customer service and delays.'         |
+| 'Overall, a great purchase; the features and performance are outstanding.'          |
+```
+
 ### Image Classification
 Here is an example of how to use the `predict` function for image classification using a Hugging Face model:
 
@@ -137,7 +165,98 @@ On execution, we get:
 | {'label': 'Pembroke', 'score': 0.98}     |
 ```
 
+### Image Segmentation
+Here is an example of how to use the `predict` function for image segmentation using a Hugging Face model:
+
+```sql
+SELECT 
+    thanosql.predict(
+        task := 'image-segmentation',
+        engine := 'huggingface',
+        input := image_column,
+        model := 'openmmlab/upernet-swin-small'
+    ) AS prediction
+FROM
+    images
+```
+On execution, we get: 
+```
+| prediction |
+|------------|
+| '{"objects": ["cat", "dog"]', "scores": [0.999756, 0.950858]}' |
+| '{"objects": ["sculpture", "water", "flower"]', "scores": [0.943367, 0.772345, 0.491883]}' |
+```
+
+### Audio Classification
+Here is an example of how to use the `predict` function for audio classification using a Hugging Face model:
+
+```sql
+SELECT 
+    thanosql.predict(
+        task := 'audio-classification',
+        engine := 'huggingface',
+        input := audio_column,
+        model := 'superb/hubert-base-superb-ks'
+    ) AS prediction
+FROM
+    audio
+```
+On execution, we get: 
+```
+| prediction |
+|------------|
+| '{"label": "on", "score": 0.5916519165039062}' |
+| '{"label": "music", "score": 0.8824673891067505}' |
+```
+
+
+### Automatic Speech Recognition
+Here is an example of how to use the `predict` function for automatic speech recognition using a Hugging Face model:
+
+```sql
+SELECT 
+    thanosql.predict(
+        task := 'automatic-speech-recognition',
+        engine := 'huggingface',
+        input := audio_column,
+        model := 'openai/whisper-tiny'
+    ) AS prediction
+FROM
+    audio
+```
+On execution, we get: 
+```
+| prediction |
+|------------|
+| 'Mary had a little lamb Little lamb little lamb' |
+| 'Happy birthday to you' |
+```
+
+
+### Video Classification
+Here is an example of how to use the `predict` function for video classification using a Hugging Face model:
+
+```sql
+SELECT 
+    thanosql.predict(
+        task := 'video-classification',
+        engine := 'huggingface',
+        input := video_column,
+        model := 'facebook/timesformer-base-finetuned-k400'
+    ) AS prediction
+FROM
+    video
+```
+On execution, we get: 
+```
+| prediction |
+|------------|
+| '{"label": "petting animal", "score": 0.5179958343505859}' |
+| '{"label": "playing basketball", "score": 0.5449063777923584}' |
+```
+
 ## Model Restrictions
 <Warning>
   When using the `predict` function with the `huggingface` engine, ensure that only models compatible with the HuggingFace pipeline are used. Verify that the selected model is supported by the HuggingFace library to avoid compatibility issues. Even with compatible tasks and pipeline models, some models might still not work. We are actively working on improving compatibility and functionality to provide a better user experience. For more information, refer to the official [Hugging Face documentation](https://huggingface.co/docs/transformers/main_classes/pipelines).
 </Warning>
+
