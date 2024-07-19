@@ -61,7 +61,7 @@ SELECT
     thanosql.generate(
         input := prompt,
         engine := 'huggingface',
-        model := 'mistralai/Mistral-7B-Instruct-v0.2',
+        model := 'smartmind/Mistral-7B-Instruct-v0.2',
         token := 'huggingface_token',
         model_args := '{"max_new_tokens": 7}'
     ) AS summary
@@ -226,7 +226,7 @@ Here are some common parameters you can use with `model_args`:
        thanosql.generate(
            input := article_intro,
            engine := 'huggingface',
-           model := 'mistralai/Mistral-7B-Instruct-v0.2',
+           model := 'smartmind/Mistral-7B-Instruct-v0.2',
            model_args := '{"max_new_tokens": 150, "temperature": 0.7}'
        ) AS expanded_intro
    FROM

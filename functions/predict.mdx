@@ -82,7 +82,8 @@ SELECT
         task := 'text-classification',
         engine := 'huggingface',
         input := text_column,
-        model := 'google-bert/bert-base-uncased'
+        model := 'google-bert/bert-base-uncased',
+        model_args := '{"device_map": "cpu"}'
     ) AS prediction
 FROM
     documents
@@ -106,7 +107,8 @@ SELECT
         task := 'sentiment-analysis',
         engine := 'huggingface',
         input := text_column,
-        model := 'distilbert/distilbert-base-uncased'
+        model := 'distilbert/distilbert-base-uncased',
+        model_args := '{"device_map": "cpu"}'
     ) AS prediction
 FROM
     reviews
@@ -174,7 +176,8 @@ SELECT
         task := 'image-segmentation',
         engine := 'huggingface',
         input := image_column,
-        model := 'openmmlab/upernet-swin-small'
+        model := 'openmmlab/upernet-swin-small',
+        model_args := '{"device_map": "cpu"}'
     ) AS prediction
 FROM
     images
@@ -196,7 +199,8 @@ SELECT
         task := 'audio-classification',
         engine := 'huggingface',
         input := audio_column,
-        model := 'superb/hubert-base-superb-ks'
+        model := 'superb/hubert-base-superb-ks',
+        model_args := '{"device_map": "cpu"}'
     ) AS prediction
 FROM
     audio
@@ -242,7 +246,8 @@ SELECT
         task := 'video-classification',
         engine := 'huggingface',
         input := video_column,
-        model := 'facebook/timesformer-base-finetuned-k400'
+        model := 'facebook/timesformer-base-finetuned-k400',
+        model_args := '{"device_map": "cpu"}'
     ) AS prediction
 FROM
     video
