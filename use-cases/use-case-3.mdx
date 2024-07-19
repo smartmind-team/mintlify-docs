@@ -120,7 +120,7 @@ def check_query_result(query_result):
                           thanosql.predict(
                               input := "Text",                      
                               model := 'bhadresh-savani/distilbert-base-uncased-emotion', 
-                              model_args := '{"top_k": 1}'          
+                              model_args := '{"top_k": 1, "device_map": "cpu"}'      
                           )::jsonb                                 
                           -- Cast the result to JSONB
                       )
@@ -163,7 +163,7 @@ def check_query_result(query_result):
                                   thanosql.predict(
                                       input := "Text",    
                                       model := 'bhadresh-savani/distilbert-base-uncased-emotion', 
-                                      model_args := '{"top_k": 1}' 
+                                      model_args := '{"top_k": 1, "device_map": "cpu"}'
                                   )::jsonb                
                                   -- Cast the result to JSONB
                               )
@@ -212,7 +212,7 @@ def check_query_result(query_result):
                                       thanosql.predict(
                                           input := "Text", 
                                           model := 'bhadresh-savani/distilbert-base-uncased-emotion',
-                                          model_args := '{"top_k": 1}' 
+                                          model_args := '{"top_k": 1, "device_map": "cpu"}' 
                                       )::jsonb             
                                           -- Cast the result to JSONB
                                   )

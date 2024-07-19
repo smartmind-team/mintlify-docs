@@ -355,7 +355,8 @@ def show_images(input, image_column_name=None):
                 thanosql.embed(
                     engine := 'huggingface',           
                     input := photo_url,                
-                    model := 'openai/clip-vit-base-patch32' 
+                    model := 'openai/clip-vit-base-patch32',
+                    model_args := '{"device_map": "cpu"}'
                 ) AS embedding                        
                     -- Alias the result of the embedding function as 'embedding'
             FROM
@@ -406,7 +407,8 @@ def show_images(input, image_column_name=None):
                 thanosql.embed(
                     engine := 'huggingface',           
                     input := 'https://images.unsplash.com/photo-1506887419028-47afaf38c27e', 
-                    model := 'openai/clip-vit-base-patch32' 
+                    model := 'openai/clip-vit-base-patch32',
+                    model_args := '{"device_map": "cpu"}' 
                 ) AS embedding                        
                     -- Alias the result of the embedding function as 'embedding'
         )
@@ -476,7 +478,8 @@ def show_images(input, image_column_name=None):
                 thanosql.embed(
                     engine := 'huggingface',           
                     input := 'a photo of the desert',  
-                    model := 'openai/clip-vit-base-patch32' 
+                    model := 'openai/clip-vit-base-patch32',
+                    model_args := '{"device_map": "cpu"}' 
                 ) AS embedding                        
                     -- Alias the result of the embedding function as 'embedding'
         )

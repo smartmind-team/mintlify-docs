@@ -60,7 +60,8 @@ SELECT
     thanosql.embed(
         input := text_column,
         engine := 'huggingface',
-        model := 'openai/clip-vit-base-patch32'
+        model := 'openai/clip-vit-base-patch32',
+        model_args := '{"device_map": "cpu"}'
     ) AS text_embedding
 FROM
     documents
@@ -84,7 +85,8 @@ ORDER BY embedding <-> (
     SELECT thanosql.embed(
         engine := 'huggingface',
         input := '/home/jovyan/use_case_search/coastal_cliff.jpg',
-        model := 'openai/clip-vit-base-patch32'
+        model := 'openai/clip-vit-base-patch32',
+        model_args := '{"device_map": "cpu"}'
         ) 
         AS embedding
 )
@@ -110,7 +112,7 @@ SELECT
         input := text_column,
         engine := 'openai',
         model := 'text-embedding-ada-002',
-        token := 'openai_api_key',
+        token := 'openai_api_key'
     ) AS text_embedding
 FROM
     documents
@@ -132,7 +134,8 @@ SELECT
     thanosql.embed(
         engine := 'huggingface',
         input := 'Once upon a time in a faraway land',
-        model := 'openai/clip-vit-base-patch32'
+        model := 'openai/clip-vit-base-patch32',
+        model_args := '{"device_map": "cpu"}'
     ) AS text_embedding
 ```
 On execution, we get: 
