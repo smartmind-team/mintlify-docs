@@ -131,6 +131,26 @@ On execution, we get:
 Please note that you would need to create an API key from OpenAI. For more information, check out the official [OpenAI documentation](https://platform.openai.com/docs/api-reference/introduction).
 </Note>
 
+## Using the OpenAI Client 
+Here is an example of how to use the `generate` function with the base URL using the OpenAI Client:
+
+```sql
+SELECT 
+    thanosql.generate(
+        engine := 'openai',
+        input := 'Once upon a time in a faraway land',
+        model := 'your_model_name',
+        base_url := 'your_base_url', -- Only applicable when the engine is 'openai'
+        token := 'your_token' -- Optional, depending on the base_url requirements
+    ) AS generated_text
+```
+On execution, we get: 
+```
+| generated_text                                                                 |
+|-------------------------------------------------------------------------------|
+| Once upon a time in a faraway land, there lived a wise old king who...        |
+```
+
 
 ### Standalone Usage
 Here is an example of how to use the generate function as a standalone query:
@@ -152,25 +172,6 @@ On execution, we get:
 | Once upon a time in a faraway land, there lived a wise old owl who had seen many seasons come and go...  |
 ```
 
-## Using the OpenAI Client 
-Here is an example of how to use the `generate` function with the base URL using the OpenAI Client:
-
-```sql
-SELECT 
-    thanosql.generate(
-        engine := 'openai',
-        input := 'Once upon a time in a faraway land',
-        model := 'your_model_name',
-        base_url := 'your_base_url', -- Only applicable when the engine is 'openai'
-        token := 'your_token' -- Optional, depending on the base_url requirements
-    ) AS generated_text
-```
-On execution, we get: 
-```
-| generated_text                                                                 |
-|-------------------------------------------------------------------------------|
-| Once upon a time in a faraway land, there lived a wise old king who...        |
-```
 
 ## Model Restrictions
 <Warning>

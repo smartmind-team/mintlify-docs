@@ -129,24 +129,6 @@ On execution, we get:
 
 <Note>Please note that you would need to create an API key from OpenAI.</Note>
 
-### Standalone Usage
-Here is an example of how to use the `embed` function as a standalone query:
-```sql
-SELECT 
-    thanosql.embed(
-        engine := 'huggingface',
-        input := 'Once upon a time in a faraway land',
-        model := 'openai/clip-vit-base-patch32',
-        model_args := '{"device_map": "cpu"}'
-    ) AS text_embedding
-```
-On execution, we get: 
-```
-| text_embedding                         |
-|----------------------------------------|
-| [0.012345, -0.023456, ... , -0.034567] |
-```
-
 ## Using the OpenAI Client 
 Here is an example of how to use the `embed` function with the base URL using the OpenAI Client:
 
@@ -166,6 +148,26 @@ On execution, we get:
 |----------------------------------------|
 | [0.014321, -0.021234, ... , -0.042567] |
 ```
+
+### Standalone Usage
+Here is an example of how to use the `embed` function as a standalone query:
+```sql
+SELECT 
+    thanosql.embed(
+        engine := 'huggingface',
+        input := 'Once upon a time in a faraway land',
+        model := 'openai/clip-vit-base-patch32',
+        model_args := '{"device_map": "cpu"}'
+    ) AS text_embedding
+```
+On execution, we get: 
+```
+| text_embedding                         |
+|----------------------------------------|
+| [0.012345, -0.023456, ... , -0.034567] |
+```
+
+
 
 ## Model Restrictions
 <Warning>
