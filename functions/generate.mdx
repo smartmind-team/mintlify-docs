@@ -105,8 +105,9 @@ On execution, we get:
 <Note>Please note that you don’t need to input token here.</Note>
 
 ### Using OpenAI Generation Models
-Here is an example of how to use the `generate` function using OpenAI LLM:
+Here are different ways to use the `generate` function with various input formats for the OpenAI LLM:
 
+#### Example 1: Simple Text Input 
 ```sql
 SELECT 
     thanosql.generate(
@@ -125,6 +126,65 @@ On execution, we get:
 |-------------------------------------------------------------------------------------------------------------------------------------|
 | Discover the amazing features of our new smartphone! Experience cutting-edge technology and unparalleled performance.               |
 | Get ready for summer with our latest collection of stylish and comfortable outdoor furniture. Perfect for any patio or garden.      |
+```
+
+#### Example 2: JSON Array Input Using json_build_array & json_build_object
+```sql
+SELECT 
+    thanosql.generate(
+        engine := 'openai',
+        input := json_build_array(
+            json_build_object(
+                'role', 'user',
+                'content', json_build_array(
+                    json_build_object(
+                        'type', 'text',
+                        'text', conversation
+                    ),
+                    json_build_object(
+                        'type', 'image_url',
+                        'image_url', json_build_object(
+                            'url', image_url,
+                            'detail', 'high'
+                        )
+                    )
+                )
+            ) 
+        ),
+        model := 'gpt-4o',
+        token := 'openai_api_key',
+        model_args := '{"temperature": 0}'
+    ) AS generated_text
+FROM 
+    product_catalog
+```
+On execution, we get: 
+```
+| generated_content                                                                                                                  |
+|------------------------------------------------------------------------------------------------------------------------------------|
+| The product details include a high-quality image available at [Image URL: https://example.com/image.jpg]. The product is described as top-of-the-line, featuring state-of-the-art technology and design. Users are excited about its launch. |
+```
+
+#### Example 3: JSON Array Input as Text
+```sql
+SELECT 
+    thanosql.generate(
+        engine := 'openai',
+        input := '[
+            {"role": "user", "content": "How''s the weather today?"},
+            {"role": "assistant", "content": "It is a bit cold."},
+            {"role": "user", "content": "What would you like to do then?"}
+        ]',
+        model := 'gpt-4o',
+        token := 'openai_api_key',
+        model_args := '{"temperature": 0.7}'
+    ) AS generated_text
+```
+On execution, we get: 
+```
+| generated_text                                                                                                                 |
+|-------------------------------------------------------------------------------------------------------------------------------------|
+| I'm just a computer program, so I don't have feelings, but I'm here and ready to help you with whatever you need!               |
 ```
 
 <Note>
