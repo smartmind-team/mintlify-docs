@@ -15,7 +15,8 @@ SELECT
         input := [column_name | 'input_text'],
         model := 'model_name',
         model_args := 'model_args_in_json',
-        token := 'auth_token'
+        token := 'auth_token',
+        base_url := 'base_url' -- Only applicable when the engine is 'openai'
     ) AS generated_text
 FROM 
     table_name
@@ -30,6 +31,7 @@ FROM
 | `model`     | string |                  | The name or path of the pre-trained text generation model.                                            | Example: `'meta-llama/Meta-Llama-3-8B'`                                                                    |
 | `model_args`| json   | `None`           | JSON string representing additional arguments for the model.                                          | Example: `'{"max_new_tokens": 50}'` Common Parameters: `max_new_tokens`, `temperature`, `top_p`, `top_k` |
 | `token`     | string | `None`           | Token for authentication if required by the model.                                                    | N/A                                                                                                        |
+| `base_url`     | string | `None`           | Base URL to point the client to a different endpoint than the default OpenAI API endpoint. This is only applicable when the engine is `openai`.  | N/A                                                                                                        |
 
 
 ## Returns
@@ -128,6 +130,26 @@ On execution, we get:
 <Note>
 Please note that you would need to create an API key from OpenAI. For more information, check out the official [OpenAI documentation](https://platform.openai.com/docs/api-reference/introduction).
 </Note>
+
+## Using the OpenAI Client 
+Here is an example of how to use the `generate` function with the base URL using the OpenAI Client:
+
+```sql
+SELECT 
+    thanosql.generate(
+        engine := 'openai',
+        input := 'Once upon a time in a faraway land',
+        model := 'your_model_name',
+        base_url := 'your_base_url', -- Only applicable when the engine is 'openai'
+        token := 'your_token'
+    ) AS generated_text
+```
+On execution, we get: 
+```
+| generated_text                                                                 |
+|-------------------------------------------------------------------------------|
+| Once upon a time in a faraway land, there lived a wise old king who...        |
+```
 
 
 ### Standalone Usage

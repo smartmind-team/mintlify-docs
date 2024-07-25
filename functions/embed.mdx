@@ -16,7 +16,8 @@ SELECT
         model := 'model_name',
         model_args := 'model_args_in_json',
         tokenizer_args := 'tokenizer_args_in_json',
-        token := 'auth_token'
+        token := 'auth_token',
+        base_url := 'base_url' -- Only applicable when the engine is 'openai'
     ) AS embedding
 FROM 
     table_name
@@ -32,6 +33,7 @@ FROM
 | `model_args`    | json   | `None`           | JSON string representing additional arguments for the model.                                          | N/A                          |
 | `tokenizer_args`| json   | `None`           | JSON string representing additional arguments for the tokenizer.                                      | N/A                                                                                                        |
 | `token`         | string | `None`           | Token for authentication if required by the model.                                                    | N/A                                                                                                        |
+| `base_url`     | string | `None`           | Base URL to point the client to a different endpoint than the default OpenAI API endpoint. This is only applicable when the engine is `openai`.  | N/A                                                                                                        |
 
 
 ## Returns
@@ -127,6 +129,26 @@ On execution, we get:
 
 <Note>Please note that you would need to create an API key from OpenAI.</Note>
 
+## Using the OpenAI Client 
+Here is an example of how to use the `embed` function with the base URL using the OpenAI Client:
+
+```sql
+SELECT 
+    thanosql.embed(
+        engine := 'openai',
+        input := 'Once upon a time in a faraway land',
+        model := 'your_model_name',
+        base_url := 'your_base_url', -- Only applicable when the engine is 'openai'
+        token := 'your_token' 
+    ) AS text_embedding
+```
+On execution, we get: 
+```
+| text_embedding                         |
+|----------------------------------------|
+| [0.014321, -0.021234, ... , -0.042567] |
+```
+
 ### Standalone Usage
 Here is an example of how to use the `embed` function as a standalone query:
 ```sql
@@ -146,7 +168,10 @@ On execution, we get:
 ```
 
 
+
 ## Model Restrictions
 <Warning>
 When using the `embed` function with the `huggingface` engine, ensure that only models compatible with the HuggingFace AutoModel and AutoTokenizer are used. Verify that the selected model is supported by the HuggingFace library to avoid compatibility issues. Even with compatible models, some models might still not work. We are actively working on improving compatibility and functionality to provide a better user experience. For more information, refer to the official [Hugging Face documentation](https://huggingface.co/docs/transformers/en/model_doc/auto).
 </Warning>
+
+
