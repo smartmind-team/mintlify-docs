@@ -1,0 +1,53 @@
+---
+title: 'Using S3'
+description: 'Learn how to use objects from S3 in ThanoSQL functions'
+---
+
+Objects from your S3 buckets can be used directly without having to be exported first. You can simply pass their URI as an input to ThanoSQL functions.
+
+## Option 1: Workspace Requirements
+
+### Step 1: Prerequisites
+
+Before you begin, ensure you have the following:
+- A basic understanding of SQL and AWS.
+- A valid AWS access key key ID and secret access key.
+- Access to a [ThanoSQL Workspace](/workspace/overview) and an S3 object.
+
+### Step 2: Setting Up Your Environment
+
+1. **Sign In:** Log in to your ThanoSQL account.
+2. **Choose a Workspace:** Navigate to the dashboard and select a workspace you want to work in. For more information on workspaces, check out the [workspace page](/workspace/overview).
+3. **Start the Lab**: Go to the `Lab` tab and wait for your Lab to load.
+
+### Step 3: Prepare the Credentials
+
+1. **Create File**: In the root folder of your Lab, create an `.aws` folder if it does not exist already. Go to the `.aws` folder and create a file called `credentials` (without any extensions).
+You can either do this directly from a terminal using a Linux text editor or from the Lab UI by creating a file and then renaming it.
+2. **Provide Credentials**: Fill in the `credentials` file with the following format:
+
+```bash
+[default]
+aws_access_key_id = YOUR_AWS_ACCESS_KEY_ID
+aws_secret_access_key = YOUR_AWS_SECRET_ACCESS_KEY
+```
+
+### Step 4: Test Run
+
+You are all set! In order to check if your ThanoSQL Workspace-AWS S3 connection works smoothly, try running one of the examples below.
+
+## Option 2: 
+
+## Example Usage
+
+<Note>Make sure that you have set the access permissions of your S3 files appropriately.</Note>
+
+### Standalone Usage
+
+You can use any ThanoSQL queries normally; simply provide the S3 URI as input. Here is an example of classifying an image stored in an S3 bucket:
+
+<Note>For more information on ThanoSQL functions, refer to the [generate](), [embed](), and [predict]() pages.</Note>
+
+### Table Input Usage
+
+S3 URIs can also be stored in tables and used like other objects and URLs. Here is an example from a table that has an image column comprised of a mix of an image object, URL, and S3 URI:
