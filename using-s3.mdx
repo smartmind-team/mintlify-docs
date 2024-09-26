@@ -4,27 +4,41 @@ description: 'Learn how to use objects from S3 in ThanoSQL functions'
 ---
 
 Objects from your S3 buckets can be used directly without having to be exported first. You can simply pass their URI as an input to ThanoSQL functions.
+There are two ways that you can use to connect your AWS account to ThanoSQL:
+1. Setting up credentials in the root folder of your workspace.
+2. Passing `adapter_key` and `adapter_secret` as arguments to ThanoSQL functions.
 
-## Option 1: Workspace Requirements
-
-### Step 1: Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following:
 - A basic understanding of SQL and AWS.
-- A valid AWS access key key ID and secret access key.
+- A valid AWS access key ID and secret access key.
 - Access to a [ThanoSQL Workspace](/workspace/overview) and an S3 object.
 
-### Step 2: Setting Up Your Environment
+<Warning>Make sure that you have set the access permissions of your object appropriately.</Warning>
+
+<Info>At the time of writing, S3 access to image and audio file types is supported, but that to video file types is not. Please keep this in mind when deciding where to implement S3 connections in your project.</Info>
+
+
+## Option 1: Using a Credentials File
+
+### Overview
+
+In this option, you have to keep a credentials file in the root folder of your workspace. You only need to set this up once, and then you can freely use S3 URIs in ThanoSQL functions just like any other paths or links. As long as as you have this file, no modifications are needed in your code and queries.
+
+### How to Set Up
+
+#### Step 1: Prepare Your Environment
 
 1. **Sign In:** Log in to your ThanoSQL account.
 2. **Choose a Workspace:** Navigate to the dashboard and select a workspace you want to work in. For more information on workspaces, check out the [workspace page](/workspace/overview).
 3. **Start the Lab**: Go to the `Lab` tab and wait for your Lab to load.
 
-### Step 3: Prepare the Credentials
+#### Step 2: Prepare Your Credentials
 
-1. **Create File**: In the root folder of your Lab, create an `.aws` folder if it does not exist already. Go to the `.aws` folder and create a file called `credentials` (without any extensions).
+1. **Create File**: In the root folder of your Lab, create a `.aws` folder if it does not exist already. Go to the `.aws` folder and create a file called `credentials` (without any extensions).
 You can either do this directly from a terminal using a Linux text editor or from the Lab UI by creating a file and then renaming it.
-2. **Provide Credentials**: Fill in the `credentials` file with the following format:
+2. **Provide Credentials**: Fill in the `credentials` file using the following format:
 
 ```bash
 [default]
@@ -32,22 +46,107 @@ aws_access_key_id = YOUR_AWS_ACCESS_KEY_ID
 aws_secret_access_key = YOUR_AWS_SECRET_ACCESS_KEY
 ```
 
-### Step 4: Test Run
+#### Step 3: Test Run
 
-You are all set! In order to check if your ThanoSQL Workspace-AWS S3 connection works smoothly, try running one of the examples below.
+You are all set! In order to check if your ThanoSQL Workspace-AWS S3 connection works smoothly, try running one of the examples provided below.
 
-## Option 2: 
+### Example Usage
 
-## Example Usage
+<Note>For more information on ThanoSQL functions, refer to the [generate](/functions/generate), [embed](/functions/embed), and [predict](/functions/predict) pages.</Note>
 
-<Note>Make sure that you have set the access permissions of your S3 files appropriately.</Note>
+#### Example 1: Classifying Audio
 
-### Standalone Usage
+Here is an example of how to classify an audio file stored in S3, after credentials have been set:
 
-You can use any ThanoSQL queries normally; simply provide the S3 URI as input. Here is an example of classifying an image stored in an S3 bucket:
+```sql
+SELECT 
+    thanosql.predict(
+        task := 'audio-classification',
+        engine := 'huggingface',
+        input := 's3://your-bucket/your-audio-file.mp3',
+        model := 'superb/hubert-base-superb-ks',
+        model_args := '{"device_map": "cpu"}'
+    ) AS prediction
+```
 
-<Note>For more information on ThanoSQL functions, refer to the [generate](), [embed](), and [predict]() pages.</Note>
+On execution, we get:
 
-### Table Input Usage
+```sql
+          prediction
+-------------------------------
+ {"label": "go", "score": NaN}
+```
 
-S3 URIs can also be stored in tables and used like other objects and URLs. Here is an example from a table that has an image column comprised of a mix of an image object, URL, and S3 URI:
+#### Example 2: Embedding a Table of Image Links
+
+S3 URIs can also be stored in tables and used just like other objects and URLs. Suppose we have the following table, which contains a column with a mix of web URLs and S3 URIs:
+
+| ImageId | ResourceLink |
+|---------|--------------|
+| 1 | https://unsplash.com/photos/bygTaBey1Xk |
+| 2 | s3://your-bucket/your-first-image-file.jpg |
+| 3 | https://unsplash.com/photos/gXSFnk2a9V4 |
+| 4 | s3://your-bucket/your-second-image-file.png |
+| 5 | https://unsplash.com/photos/grg6-DNJuaU |
+
+If we want to calculate the embeddings of the images like we do in [Use Case 2](/use-cases/use-case-2), we can use the following query:
+
+```sql
+SELECT
+    imageid AS id,
+    resourcelink AS link,
+    thanosql.embed(
+        engine := 'huggingface',           
+        input := resourcelink,                
+        model := 'openai/clip-vit-base-patch32',
+        model_args := '{"device_map": "cpu"}'
+    ) AS embedding                        
+FROM
+    your_image_table
+```
+
+On execution, we get:
+
+```sql
+| id |                     link                    |                       embedding                       |
+|----|---------------------------------------------|-------------------------------------------------------|
+|  1 | https://unsplash.com/photos/bygTaBey1Xk     | [0.16986924,0.16281517,0.21393582,-0.20016165, ...]   |
+|  2 | s3://your-bucket/your-first-image-file.jpg  | [0.26234767,-0.22636145,0.1522088,-0.1634534, ...]    |
+|  3 | https://unsplash.com/photos/gXSFnk2a9V4     | [0.03666824,0.049130432,0.04386332,-0.16477501, ...]  |
+|  4 | s3://your-bucket/your-second-image-file.png | [0.051476493,-0.2522358,-0.5084932,0.14148024, ...]   |
+|  5 | https://unsplash.com/photos/grg6-DNJuaU     | [0.12211017,0.055086724,-0.11496107,-0.15263805, ...] |
+```
+
+
+## Option 2: Using ThanoSQL Function Parameters
+
+### Overview
+
+For this option, you are not required to keep any separate files. You can directly connect to your AWS account without setting up anything in advance. However, you need to specify the `adapter_key` and `adapter_secret` arguments each time you use a function that takes in anything requiring a connection to your S3 objects. Depending on the size of your project, this may add some complexity to your code or query. Take a look at the example provided below for a better understanding of how to provide your AWS credentials as arguments to ThanoSQL functions.
+
+### Example Usage
+
+#### Transcribing Speech Recording
+
+Here is an example of how to transcribe an audio recording of a speech without having to set up anything previously. Suppose we have an audio recording like that in [this link](https://static.voices.com/wp-content/uploads/2020/08/White_Knights_Aleesha_Bake.mp3) stored in S3 as `your-speech-file.mp3`. We can use the query below:
+
+```sql
+SELECT 
+    thanosql.predict(
+        task := 'automatic-speech-recognition',
+        engine := 'huggingface',
+        input := 's3://your-bucket/your-speech-file.mp3',
+        model := 'openai/whisper-tiny',
+        model_args := '{"device_map": "cpu"}',
+        adapter_key := 'YOUR_AWS_ACCESS_KEY_ID',
+        adapter_secret := 'YOUR_AWS_SECRET_ACCESS_KEY'
+    ) AS prediction
+```
+
+On execution, we get:
+
+```sql
+| prediction |
+|------------|
+| As fresh snow blanketed the grounds of the kingdom, the white knight gazed out upon the sprawling valley. sighed to himself and said, I must be the loneliest knight in all of the land. All of a sudden, the white knight spotted a strange creature wandering up the snowy path towards him. As the distance between the knight and the creature shrank, he saw that it was a cow. Who goes there? The White Knight stammered. To his surprise, a gentle voice responded. It is I, Maria, a calf who has found herself far from home. |
+```
