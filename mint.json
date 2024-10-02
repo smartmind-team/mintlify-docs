@@ -31,6 +31,10 @@
       "url": "use-cases"
     },
     {
+      "name": "Learn",
+      "url": "learn"
+    },
+    {
       "name": "SDK",
       "url": "sdk"
     },
@@ -65,8 +69,7 @@
       "group": "Get Started",
       "pages": [
         "introduction",
-        "quickstart",
-        "using-s3"
+        "quickstart"
       ]
     },
     {
@@ -107,6 +110,17 @@
         "use-cases/use-case-1",
         "use-cases/use-case-2",
         "use-cases/use-case-3"
+      ]
+    },
+    {
+      "group": "Learn",
+      "pages": [
+        {
+          "group": "Advanced User Guide",
+          "pages": [
+            "learn/using-s3"
+          ]
+        }
       ]
     },
     {
