@@ -37,7 +37,6 @@ FROM
 | `pipeline_args` | json   | `None`          | JSON string representing additional arguments for the pipeline.                                       | N/A                                                                                                                                                  |
 | `task_args`     | json   | `None`          | JSON string representing additional arguments specific to the task.                                   | N/A                                                                                                                                                  |
 | `token`         | string | `None`          | Token for authentication if required by the model.                                                    | N/A                                                                                                                                                  |
-| `base_url`     | string | `None`           | Base URL to point the client to a different endpoint than the default OpenAI API endpoint. This is only applicable when the engine is `openai`.  | N/A                                                                                                        |
 
 
 ## Returns
@@ -238,28 +237,6 @@ On execution, we get:
 | 'Happy birthday to you' |
 ```
 
-Here is an example of how to use the `predict` function for automatic speech recognition using a OpenAI model:
-
-```sql
-SELECT 
-    thanosql.predict(
-        task := 'automatic-speech-recognition',
-        engine := 'openai',
-        input := audio_column,
-        model := 'whisper-1',
-        token := 'openai_api_key'
-    ) AS prediction
-FROM
-    audio
-```
-On execution, we get: 
-```
-| prediction |
-|------------|
-| 'Twinkle twinkle little star'   |
-| 'Jack and Jill went up the hill'  |
-```
-
 ### Video Classification
 Here is an example of how to use the `predict` function for video classification using a Hugging Face model:
 
@@ -285,6 +262,6 @@ On execution, we get:
 
 ## Model Restrictions
 <Warning>
-  When using the `predict` function with the `huggingface` engine, ensure that only models compatible with the HuggingFace pipeline are used. Verify that the selected model is supported by the HuggingFace library to avoid compatibility issues. Even with compatible tasks and pipeline models, some models might still not work. We are actively working on improving compatibility and functionality to provide a better user experience. For more information, refer to the official [Hugging Face documentation](https://huggingface.co/docs/transformers/main_classes/pipelines).
+  When using the `predict` function with the `huggingface` engine, ensure that only models compatible with the HuggingFace pipeline are used. Verify that the selected model is supported by the HuggingFace library to avoid compatibility issues. Even with compatible tasks and pipeline models, some models might still not work. We are actively working on improving compatibility and functionality to provide a better user experience. For more information, refer to the official [HuggingFace documentation](https://huggingface.co/docs/transformers/main_classes/pipelines).
 </Warning>
 
