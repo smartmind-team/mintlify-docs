@@ -29,9 +29,9 @@ FROM
 | `engine`    | string | `'huggingface'`  | The engine to use for text generation.                                                                | `'huggingface'`: Uses models from HuggingFace. `'thanosql'`: Uses ThanoSQL's native models. `'openai'`: Uses models from OpenAI.  |
 | `input`     | string |                  | The input text based on which the text generation will occur.                                         | N/A                                                                                                        |
 | `model`     | string |                  | The name or path of the pre-trained text generation model.                                            | Example: `'meta-llama/Meta-Llama-3-8B'`                                                                    |
-| `model_args`| json   | `None`           | JSON string representing additional arguments for the model.                                          | Example: `'{"max_new_tokens": 50}'` Common Parameters: `max_new_tokens`, `temperature`, `top_p`, `top_k` |
+| `model_args`| json   | `None`           | JSON string representing additional arguments for the model.                                          | Example: `'{"max_new_tokens": 50}'` Common Parameters: `max_new_tokens`, `temperature`, `top_p`, `top_k`   |
 | `token`     | string | `None`           | Token for authentication if required by the model.                                                    | N/A                                                                                                        |
-| `base_url`     | string | `None`           | Base URL to point the client to a different endpoint than the default OpenAI API endpoint. This is only applicable when the engine is `openai`.  | N/A                                                                                                        |
+| `base_url`  | string | `None`           | Base URL to point the client to a different endpoint than the default OpenAI API endpoint. This is only applicable when the engine is `openai`.  | N/A                                                             |
 
 
 ## Returns
@@ -160,8 +160,8 @@ FROM
 ```
 On execution, we get: 
 ```
-| generated_content                                                                                                                  |
-|------------------------------------------------------------------------------------------------------------------------------------|
+| generated_content                                                                                                                                                                                                                            |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | The product details include a high-quality image available at [Image URL: https://example.com/image.jpg]. The product is described as top-of-the-line, featuring state-of-the-art technology and design. Users are excited about its launch. |
 ```
 
@@ -183,8 +183,8 @@ SELECT
 On execution, we get: 
 ```
 | generated_text                                                                                                                 |
-|-------------------------------------------------------------------------------------------------------------------------------------|
-| I'm just a computer program, so I don't have feelings, but I'm here and ready to help you with whatever you need!               |
+|--------------------------------------------------------------------------------------------------------------------------------|
+| I'm just a computer program, so I don't have feelings, but I'm here and ready to help you with whatever you need!              |
 ```
 
 <Note>
@@ -206,7 +206,7 @@ SELECT
 ```
 On execution, we get: 
 ```
-| generated_text                                                                 |
+| generated_text                                                                |
 |-------------------------------------------------------------------------------|
 | Once upon a time in a faraway land, there lived a wise old king who...        |
 ```
@@ -258,9 +258,9 @@ Here are some common parameters you can use with `model_args`:
 
 | Parameter        | Type    | Description                                                                                           |
 |------------------|---------|-------------------------------------------------------------------------------------------------------|
-| `max_tokens`(OpenAI), `max_new_tokens`(Hugging Face) | integer | Maximum number of tokens to generate.                                                                 |
+| `max_tokens`(OpenAI), `max_new_tokens`(Hugging Face) | integer | Maximum number of tokens to generate.                             |
 | `temperature`    | float   | Sampling temperature. Lower values make output more focused, higher values make it more random.       |
-| `top_p`          | float   | Nucleus sampling probability. Controls diversity by sampling from the top probability mass. Used as alternative to `tempearture`           |
+| `top_p`          | float   | Nucleus sampling probability. Controls diversity by sampling from the top probability mass. Used as alternative to `tempearture`   |
 
 
 ### Example Configurations
