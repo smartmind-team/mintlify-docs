@@ -4,9 +4,7 @@ description: 'Learn how to use objects from S3 in ThanoSQL functions'
 ---
 
 Objects from your S3 buckets can be used directly without having to be exported first. You can simply pass their URI as an input to ThanoSQL functions.
-There are two ways that you can use to connect your AWS account to ThanoSQL:
-1. Setting up credentials in the root folder of your workspace.
-2. Passing `adapter_key` and `adapter_secret` as arguments to ThanoSQL functions.
+Currently, there is only one way that you can use to connect your AWS account to ThanoSQL: setting up credentials in the root folder of your workspace.
 
 ## Prerequisites
 
@@ -20,11 +18,11 @@ Before you begin, ensure you have the following:
 <Info>At the time of writing, S3 access to image and audio file types is supported, but that to video file types is not. Please keep this in mind when deciding where to implement S3 connections in your project.</Info>
 
 
-## Option 1: Using a Credentials File
+## Using a Credentials File
 
 ### Overview
 
-In this option, you have to keep a credentials file in the root folder of your workspace. You only need to set this up once, and then you can freely use S3 URIs in ThanoSQL functions just like any other paths or links. As long as as you have this file, no modifications are needed in your code and queries.
+You have to keep a credentials file in the root folder of your workspace. You only need to set this up once, and then you can freely use S3 URIs in ThanoSQL functions just like any other paths or links. As long as as you have this file, no modifications are needed in your code and queries.
 
 ### How to Set Up
 
@@ -81,13 +79,13 @@ On execution, we get:
 
 S3 URIs can also be stored in tables and used just like other objects and URLs. Suppose we have the following table, which contains a column with a mix of web URLs and S3 URIs:
 
-| ImageId | ResourceLink |
-|---------|--------------|
-| 1 | https://unsplash.com/photos/bygTaBey1Xk |
-| 2 | s3://your-bucket/your-first-image-file.jpg |
-| 3 | https://unsplash.com/photos/gXSFnk2a9V4 |
-| 4 | s3://your-bucket/your-second-image-file.png |
-| 5 | https://unsplash.com/photos/grg6-DNJuaU |
+| ImageId |                 ResourceLink                |
+|---------|---------------------------------------------|
+|    1    | https://unsplash.com/photos/bygTaBey1Xk     |
+|    2    | s3://your-bucket/your-first-image-file.jpg  |
+|    3    | https://unsplash.com/photos/gXSFnk2a9V4     |
+|    4    | s3://your-bucket/your-second-image-file.png |
+|    5    | https://unsplash.com/photos/grg6-DNJuaU     |
 
 If we want to calculate the embeddings of the images like we do in [Use Case 2](/use-cases/use-case-2), we can use the following query:
 
@@ -115,38 +113,4 @@ On execution, we get:
 |  3 | https://unsplash.com/photos/gXSFnk2a9V4     | [0.03666824,0.049130432,0.04386332,-0.16477501, ...]  |
 |  4 | s3://your-bucket/your-second-image-file.png | [0.051476493,-0.2522358,-0.5084932,0.14148024, ...]   |
 |  5 | https://unsplash.com/photos/grg6-DNJuaU     | [0.12211017,0.055086724,-0.11496107,-0.15263805, ...] |
-```
-
-
-## Option 2: Using ThanoSQL Function Parameters
-
-### Overview
-
-For this option, you are not required to keep any separate files. You can directly connect to your AWS account without setting up anything in advance. However, you need to specify the `adapter_key` and `adapter_secret` arguments each time you use a function that takes in anything requiring a connection to your S3 objects. Depending on the size of your project, this may add some complexity to your code or query. Take a look at the example provided below for a better understanding of how to provide your AWS credentials as arguments to ThanoSQL functions.
-
-### Example Usage
-
-#### Transcribing Speech Recording
-
-Here is an example of how to transcribe an audio recording of a speech without having to set up anything previously. Suppose we have an audio recording like that in [this link](https://static.voices.com/wp-content/uploads/2020/08/White_Knights_Aleesha_Bake.mp3) stored in S3 as `your-speech-file.mp3`. We can use the query below:
-
-```sql
-SELECT 
-    thanosql.predict(
-        task := 'automatic-speech-recognition',
-        engine := 'huggingface',
-        input := 's3://your-bucket/your-speech-file.mp3',
-        model := 'openai/whisper-tiny',
-        model_args := '{"device_map": "cpu"}',
-        adapter_key := 'YOUR_AWS_ACCESS_KEY_ID',
-        adapter_secret := 'YOUR_AWS_SECRET_ACCESS_KEY'
-    ) AS prediction
-```
-
-On execution, we get:
-
-```sql
-| prediction |
-|------------|
-| As fresh snow blanketed the grounds of the kingdom, the white knight gazed out upon the sprawling valley. sighed to himself and said, I must be the loneliest knight in all of the land. All of a sudden, the white knight spotted a strange creature wandering up the snowy path towards him. As the distance between the knight and the creature shrank, he saw that it was a cow. Who goes there? The White Knight stammered. To his surprise, a gentle voice responded. It is I, Maria, a calf who has found herself far from home. |
 ```
